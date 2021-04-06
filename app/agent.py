@@ -3,6 +3,7 @@ class Agent:
     def __init__(self, id, ideology):
         self.id = id
         self.ideology = ideology
+        self.node = None
 
     def vote(self, parties):
         difference = None
