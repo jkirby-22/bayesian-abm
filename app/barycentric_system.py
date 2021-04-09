@@ -62,7 +62,6 @@ class BarycentricSystem: #camel case for file name?
         index_two = 1
         control_index = 2
         if self.second_third_tie_check(point=point, index_one=index_one, index_two=index_two, control_index=control_index) or self.dominant_second_finish_check(point=point, index_one=index_one, index_two=index_two, control_index=control_index):
-            print('12 mp')
             p12 = mp
         else:
             p12 = self.get_sp(point=point, control_index=control_index)
@@ -72,7 +71,6 @@ class BarycentricSystem: #camel case for file name?
         index_two = 2
         control_index = 1
         if self.second_third_tie_check(point=point, index_one=index_one, index_two=index_two, control_index=control_index) or self.dominant_second_finish_check(point=point, index_one=index_one, index_two=index_two, control_index=control_index):
-            print('13 mp')
             p13 = mp
         else:
             p13 = self.get_sp(point=point, control_index=control_index)
@@ -82,7 +80,6 @@ class BarycentricSystem: #camel case for file name?
         index_two = 2
         control_index = 0
         if self.second_third_tie_check(point=point, index_one=index_one, index_two=index_two,control_index=control_index) or self.dominant_second_finish_check(point=point, index_one=index_one, index_two=index_two, control_index=control_index):
-            print('23 mp')
             p23 = mp
         else:
             p23 = self.get_sp(point=point, control_index=control_index)

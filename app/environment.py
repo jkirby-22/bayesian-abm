@@ -20,11 +20,19 @@ class Environment:
     def get_node(self, agent_id):
         return self.node[agent_id]
 
-    def get_neighbour_agents(self, agent_id):
+    def get_neighbour_nodes(self, agent_id, level): #this function could deffo be cleaner
         node = self.get_node(agent_id=agent_id)
-        return self.get_neighbour_nodes(node=node)
+        node_list = [node]
+        explored_nodes = []
+        for i in range(0, level):
+            level_nodes = node_list
+            for current_node in list(set(node_list).difference(explored_nodes)): #for all unexplored nodes
+                level_nodes = list(set(level_nodes + self.get_neighbours(node=current_node)).difference(set(node_list))) #get all neighbours that arent already visited
+                explored_nodes.append(current_node) #maybe shouldnt mess with this as its in the loop condition?
+            node_list = list(set(node_list + level_nodes))
+        return list(set(node_list).difference(set([node]))) #remove own agent
 
-    def get_neighbour_nodes(self, node):
+    def get_neighbours(self, node):
         if node.x + 1 > self.x - 1:
             x_plus = 0
         else:

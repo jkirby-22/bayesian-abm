@@ -57,9 +57,14 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=2)
-    barycentric = BarycentricSystem()
-    point = [0.60, .35, .05]
-    pivot = barycentric.get_pivot_probabilities(point=point)
-    print('p12: ' + str(pivot["p12"]))
-    print('p13: ' + str(pivot["p13"]))
-    print('p23: ' + str(pivot["p23"]))
+    sim.create_agents()
+    #sim.environment.print_network()
+    level = 1
+    neighbours = sim.environment.get_neighbour_nodes(agent_id=83, level=level)
+    node = sim.environment.get_node(agent_id=83)
+    print('Agent 83s node: x: ' + str(node.x) + ' y: ' + str(node.y))
+    count = 0
+    for node in neighbours:
+        print('Node: ' + str(node.id) + ' x: ' + str(node.x) + ' y: ' + str(node.y))
+        count += 1
+    print("Level: " + str(level) + " Neighbour count: " + str(count))
