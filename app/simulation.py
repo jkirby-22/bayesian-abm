@@ -2,6 +2,8 @@ import numpy as np #put numpy in one file
 from agent import Agent
 from party import Party
 from environment import Environment
+from barycentric_system import BarycentricSystem
+
 class Simulation: #Do we need a class for this?
 
     def __init__(self, ideology_low, ideology_high, no_party): #Maybe make ideology modular so it could be multi dimminesional
@@ -55,12 +57,7 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=2)
+    barycentric = BarycentricSystem()
+    point = [0.67, .20, .13]
+    print(barycentric.get_draw_point(point=point, control_index=2))
     sim.create_agents()
-    #sim.create_parties()
-    sim.environment.print_network()
-    neighbours = sim.environment.get_neighbour_agents(agent_id=0)
-    node = sim.environment.get_node(agent_id=0)
-    print('Agent 0s node: x: ' + str(node.x) + ' y: ' + str(node.y))
-    for node in neighbours:
-        print('Node: ' + str(node.id) + ' x: ' + str(node.x) + ' y: ' + str(node.y))
-    #sim.election()
