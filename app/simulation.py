@@ -58,6 +58,8 @@ class Simulation: #Do we need a class for this?
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=2)
     barycentric = BarycentricSystem()
-    point = [0.67, .20, .13]
-    print(barycentric.get_draw_point(point=point, control_index=2))
-    sim.create_agents()
+    point = [0.60, .35, .05]
+    pivot = barycentric.get_pivot_probabilities(point=point)
+    print('p12: ' + str(pivot["p12"]))
+    print('p13: ' + str(pivot["p13"]))
+    print('p23: ' + str(pivot["p23"]))
