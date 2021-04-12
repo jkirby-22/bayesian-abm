@@ -63,7 +63,21 @@ if __name__ == '__main__':
     level = 1
     sim.inital_election()
     agent = sim.environment.get_agent(id=83)
-    print("Agent: " + str(agent.id) + " Voted for: " + str(agent.previous_vote_id))
-    print("Their prob dist: " + str(agent.get_probability_distribution(environment=sim.environment, level=level, no_of_parties=sim.no_party)))
+
+    #print("Agent: " + str(agent.id) + " Voted for: " + str(agent.previous_vote_id))
+    #print("Their prob dist: " + str(agent.get_probability_distribution(environment=sim.environment, level=level, no_of_parties=sim.no_party)))
+
+    utility = []
+    utility.append(agent.get_utility(sim.party[0]))
+    utility.append(agent.get_utility(sim.party[1]))
+    utility.append(agent.get_utility(sim.party[2]))
+    #print("Their utility: " + str(utility))
+
+    party_ideology = []
+    for party in sim.party:
+        party_ideology.append(party.ideology)
+
+    #print("The party ideology: " + str(party_ideology))
+    #print("The agents ideology: " + str(agent.ideology))
     agent.vote(parties=sim.party, environment=sim.environment, level=1)
 

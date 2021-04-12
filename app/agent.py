@@ -38,7 +38,8 @@ class Agent:
         prospective_rating = []
         for party in parties:
             prospective_rating.append(self.get_prospective_rating(party=party, pivot_probabilities=pivot_probabilities, parties=parties))
-        print("Prospective rating: " + str(prospective_rating))
+        #print("Prospective rating: " + str(prospective_rating))
+        #print("Pivot probabilities: " + str(pivot_probabilities))
 
     def pure_vote(self, parties): #PUT UTILITY FUNCTION HERE
         utility = None
