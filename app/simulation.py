@@ -11,7 +11,7 @@ class Simulation: #Do we need a class for this?
         self.ideology_high = ideology_high
         self.no_agent = 169
         self.no_party = no_party
-        self.agent = []
+        #self.agent = []
         self.party = []
         self.environment = None
         #self.environment = Environment(x=13, y=13) #make this consistent with number of agents
@@ -27,16 +27,16 @@ class Simulation: #Do we need a class for this?
     def create_agents(self): #do we need self?
         #Do we need to take a full sample or take 1 sample per agent?
         agent_ideology_distribution = np.random.randint(self.ideology_low, self.ideology_high, self.no_agent) #is this the right dist?, use =parameters
-
         id = 0
+        agent = []
         for ideology in agent_ideology_distribution:
-            self.agent.append(Agent(id=id, ideology=ideology))
+            agent.append(Agent(id=id, ideology=ideology))
             id += 1
         #np.reshape(self.agent, (13, 13))
-        self.create_environment()
+        self.create_environment(agent)
 
-    def create_environment(self):
-        self.environment = Environment(x=13, y=13, agent=self.agent) #make specific to number of agents
+    def create_environment(self, agent):
+        self.environment = Environment(x=13, y=13, agent=agent) #make specific to number of agents
 
     def create_parties(self): #do we need self?
         #Do we need to take a full sample or take 1 sample per agent?
@@ -46,25 +46,24 @@ class Simulation: #Do we need a class for this?
             self.party.append(Party(id=id, ideology=ideology))
             id += 1
 
-    def election(self):
-        for agent in self.agent:
-            elected = agent.vote(self.party)
-            print('Agent: ' + str(agent.id) + ' Ideology Value: ' + str(agent.ideology))
-            print('Voted for: ')
-            print('Party: ' + str(elected.id) + ' Ideology Value: ' + str(elected.ideology))
+    def inital_election(self):
+        agents = sim.environment.get_agent(id=None)
+        for agent in agents:
+            elected = agent.pure_vote(self.party)
+            #print('Agent: ' + str(agent.id) + ' Ideology Value: ' + str(agent.ideology))
+            #print('Voted for: ')
+           # print('Party: ' + str(elected.id) + ' Ideology Value: ' + str(elected.ideology))
 
 
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
-    sim = Simulation(ideology_low=1, ideology_high=100, no_party=2)
+    sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
     sim.create_agents()
-    #sim.environment.print_network()
+    sim.create_parties()
     level = 1
-    neighbours = sim.environment.get_neighbour_nodes(agent_id=83, level=level)
-    node = sim.environment.get_node(agent_id=83)
-    print('Agent 83s node: x: ' + str(node.x) + ' y: ' + str(node.y))
-    count = 0
-    for node in neighbours:
-        print('Node: ' + str(node.id) + ' x: ' + str(node.x) + ' y: ' + str(node.y))
-        count += 1
-    print("Level: " + str(level) + " Neighbour count: " + str(count))
+    sim.inital_election()
+    agent = sim.environment.get_agent(id=83)
+    print("Agent: " + str(agent.id) + " Voted for: " + str(agent.previous_vote_id))
+    print("Their prob dist: " + str(agent.get_probability_distribution(environment=sim.environment, level=level, no_of_parties=sim.no_party)))
+    agent.vote(parties=sim.party, environment=sim.environment, level=1)
+

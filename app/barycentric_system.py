@@ -47,14 +47,14 @@ class BarycentricSystem: #camel case for file name?
         #Should do comibinations formulae here if want to extend to 4
         #return dict for extensibilities sake
         pivot = { #not extensible
-            "p12": 0,
-            "p13": 0,
-            "p23": 0
+            "01": 0,
+            "02": 0,
+            "12": 0
         }
         if point[0] == point[1] == point[2]: #if all equal then just return constant so utility is used. This ISNT MODULAR THO AS UTILITY OUTSIDE OF PROB SCOPE
-            pivot["p12"] = 1
-            pivot["p13"] = 1
-            pivot["p23"] = 1
+            pivot["01"] = 1
+            pivot["02"] = 1
+            pivot["12"] = 1
 
         mp = self.get_mp(point=point)
         #p12
@@ -84,7 +84,7 @@ class BarycentricSystem: #camel case for file name?
         else:
             p23 = self.get_sp(point=point, control_index=control_index)
 
-        pivot["p12"] = round(p12, 2)
-        pivot["p13"] = round(p13, 2)
-        pivot["p23"] = round(p23, 2)
+        pivot["01"] = round(p12, 2)
+        pivot["02"] = round(p13, 2)
+        pivot["12"] = round(p23, 2)
         return pivot

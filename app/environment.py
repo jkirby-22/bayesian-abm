@@ -1,8 +1,9 @@
 from node import Node
 import numpy as np
 class Environment:
-    def __init__(self, x, y, agent):
+    def __init__(self, x, y, agent): #must take agent list in as param
         self.network = [] #np.empty((x, y))
+        self.agent = agent
         #print(self.network.shape)
         self.node = []
         self.x = x
@@ -17,8 +18,21 @@ class Environment:
                 id += 1
         np.reshape(self.network, (x, y))
 
+    def get_agent(self, id):
+        if id is None:
+            return self.agent
+        else:
+            return self.agent[id]
+
     def get_node(self, agent_id):
         return self.node[agent_id]
+
+    def get_neighbour_agents(self, agent_id, level): #not most effecient but more modular, discuss or review
+        nodes = self.get_neighbour_nodes(agent_id=agent_id, level=level)
+        agents = []
+        for node in nodes:
+            agents.append(self.agent[node.agent_id])
+        return agents
 
     def get_neighbour_nodes(self, agent_id, level): #this function could deffo be cleaner
         node = self.get_node(agent_id=agent_id)
