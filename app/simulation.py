@@ -46,6 +46,23 @@ class Simulation: #Do we need a class for this?
             self.party.append(Party(id=id, ideology=ideology))
             id += 1
 
+    def get_abs_no_parties(self):
+
+    def get_vote_count(self):
+        agents = sim.environment.get_agent(id=None)
+        votes = [0, 0, 0]  # change more modular
+        for agent in agents:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
+        return votes
+
+    def get_vote_share(self):
+        agents = sim.environment.get_agent(id=None)
+        votes = [0, 0, 0]  # change more modular
+        for agent in agents:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
+
+        distribution = [round(vote / len(agents), 2) for vote in votes]
+        return distribution
     def inital_election(self):
         agents = sim.environment.get_agent(id=None)
         for agent in agents:
@@ -54,30 +71,34 @@ class Simulation: #Do we need a class for this?
             #print('Voted for: ')
            # print('Party: ' + str(elected.id) + ' Ideology Value: ' + str(elected.ideology))
 
+    def election(self, level):
+        agents = self.environment.get_agent(id=None)
+        for agent in agents:
+            agent.choose_vote(parties=self.party, environment=self.environment, level=level) #maybe return vote here aswell so no second loop needed?
+        for agent in agents:
+            agent.submit_vote()
+
+    def round(self, no_elections, level):
+        sim.create_agents()
+        sim.create_parties()
+        self.inital_election()
+        for i in range(0, no_elections):
+            self.election(level)
+        results = { #not extensible will have to change this code if you want different results
+            "vote_count": self.get_vote_count(),
+            "vote_share": self.get_vote_share() #don't need vote share and count as can be deducted
+        }
+        self.party = None
+        self.environment = None
+        #garbage colleciton needed or auto?
+        return results
+
+    def run(self, no_elections, level, rounds):
+
 
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
-    sim.create_agents()
-    sim.create_parties()
-    level = 1
-    sim.inital_election()
-    agent = sim.environment.get_agent(id=83)
-
-    #print("Agent: " + str(agent.id) + " Voted for: " + str(agent.previous_vote_id))
-    #print("Their prob dist: " + str(agent.get_probability_distribution(environment=sim.environment, level=level, no_of_parties=sim.no_party)))
-
-    utility = []
-    utility.append(agent.get_utility(sim.party[0]))
-    utility.append(agent.get_utility(sim.party[1]))
-    utility.append(agent.get_utility(sim.party[2]))
-    #print("Their utility: " + str(utility))
-
-    party_ideology = []
-    for party in sim.party:
-        party_ideology.append(party.ideology)
-
-    #print("The party ideology: " + str(party_ideology))
-    #print("The agents ideology: " + str(agent.ideology))
-    agent.vote(parties=sim.party, environment=sim.environment, level=1)
+    sim.run(no_elections=20, level=1, rounds=1000) #think of outer vs inner level for results, eg level is outer
+    #agent.vote(parties=sim.party, environment=sim.environment, level=1)
 

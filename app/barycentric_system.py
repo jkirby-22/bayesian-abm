@@ -23,11 +23,11 @@ class BarycentricSystem: #camel case for file name?
         #return 1 - eucliedan
 
     def get_mp(self, point):
-        return 1 - np.linalg.norm(point - np.asarray([0.33, 0.33, 0.33]))
+        return np.linalg.norm(point - np.asarray([0.33, 0.33, 0.33]))
 
     def get_sp(self, point, control_index):
         draw_point = self.get_draw_point(point, control_index)
-        return 1 - np.linalg.norm(np.asarray(point) - np.asarray(draw_point))
+        return np.linalg.norm(np.asarray(point) - np.asarray(draw_point))
 
 
     def second_third_tie_check(self, point, index_one, index_two, control_index):
@@ -84,7 +84,20 @@ class BarycentricSystem: #camel case for file name?
         else:
             p23 = self.get_sp(point=point, control_index=control_index)
 
-        pivot["01"] = round(p12, 2)
-        pivot["02"] = round(p13, 2)
-        pivot["12"] = round(p23, 2)
+        if p12 != 0:
+            ratio_p12 = (p13 / p12) + (p23 / p12)
+        else:
+            ratio_p12 = 0
+        if p13 != 0:
+            ratio_p13 = (p12 / p13) + (p23 / p13)
+        else:
+            ratio_p13 = 0
+        if p23 != 0:
+            ratio_p23 = (p13 / p23) + (p12 / p23)
+        else:
+            ratio_p23 = 0
+
+        pivot["01"] = round(ratio_p12, 2)
+        pivot["02"] = round(ratio_p13, 2)
+        pivot["12"] = round(ratio_p23, 2)
         return pivot
