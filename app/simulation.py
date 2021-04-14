@@ -105,7 +105,6 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
-    sim.create_parties()
-    sim.run(no_elections=20, level=1, rounds=1000) #think of outer vs inner level for results, eg level is outer
+    #sim.run(no_elections=20, level=1, rounds=1000) #think of outer vs inner level for results, eg level is outer
     #agent.vote(parties=sim.party, environment=sim.environment, level=1)
 
