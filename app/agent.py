@@ -38,10 +38,6 @@ class Agent:
 
     def choose_vote(self, parties, environment, level):
         distribution = self.get_probability_distribution(environment=environment, level=level, no_of_parties=len(parties))
-        if self.id == 83:
-            print("Agent 83's probability distribution: " + str(distribution))
-        if self.id == 1:
-            print("Agent 1's probability distribution: " + str(distribution))
         pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
         #if self.id == 83:
             #print('p12: ' + str(pivot_probabilities["01"]))
@@ -58,10 +54,6 @@ class Agent:
                 choice = party
                 choice_rating = prospective_rating
         self.new_vote_id = choice.id
-        if self.id == 83:
-            print("Agent 83s vote: " + str(self.new_vote_id))
-        if self.id == 1:
-            print("Agent 1s vote: " + str(self.new_vote_id))
 
     def pure_vote(self, parties): #PUT UTILITY FUNCTION HERE
         utility = None

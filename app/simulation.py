@@ -2,6 +2,7 @@ import numpy as np #put numpy in one file
 from agent import Agent
 from party import Party
 from environment import Environment
+from results import Results
 from barycentric_system import BarycentricSystem
 
 class Simulation: #Do we need a class for this?
@@ -14,6 +15,7 @@ class Simulation: #Do we need a class for this?
         #self.agent = []
         self.party = []
         self.environment = None
+        self.results = Results()
         #self.environment = Environment(x=13, y=13) #make this consistent with number of agents
 
     def print_agents(self):
@@ -45,8 +47,6 @@ class Simulation: #Do we need a class for this?
         for ideology in party_ideology_distribution:
             self.party.append(Party(id=id, ideology=ideology))
             id += 1
-
-    def get_abs_no_parties(self):
 
     def get_vote_count(self):
         agents = sim.environment.get_agent(id=None)
@@ -88,17 +88,24 @@ class Simulation: #Do we need a class for this?
             "vote_count": self.get_vote_count(),
             "vote_share": self.get_vote_share() #don't need vote share and count as can be deducted
         }
-        self.party = None
+        self.party = []
         self.environment = None
         #garbage colleciton needed or auto?
         return results
 
     def run(self, no_elections, level, rounds):
-
-
+        row = {
+            "level": level,
+            "no_of_agents": self.no_agent,
+            "no_of_parties": self.no_party
+        }
+        run_id = self.results.insert_run(row=row)
+        for i in range(0, rounds):
+            self.results.insert_round(row=self.round(no_elections=no_elections, level=level), run_id=run_id)
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
+    sim.create_parties()
     sim.run(no_elections=20, level=1, rounds=1000) #think of outer vs inner level for results, eg level is outer
     #agent.vote(parties=sim.party, environment=sim.environment, level=1)
 
