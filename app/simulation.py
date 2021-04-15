@@ -102,9 +102,14 @@ class Simulation: #Do we need a class for this?
         run_id = self.results.insert_run(row=row)
         for i in range(0, rounds):
             self.results.insert_round(row=self.round(no_elections=no_elections, level=level), run_id=run_id)
+            print('round: ' + str(i) + ' Complete.')
+        return run_id
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
-    #sim.run(no_elections=20, level=1, rounds=1000) #think of outer vs inner level for results, eg level is outer
+    level_5_id = sim.run(no_elections=20, level=5, rounds=1000)
+    sim.results.get_absolute_party_result(level_5_id)
+    level_6_id = sim.run(no_elections=20, level=6, rounds=1000)
+    sim.results.get_absolute_party_result(level_6_id)
     #agent.vote(parties=sim.party, environment=sim.environment, level=1)
 

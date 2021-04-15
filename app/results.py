@@ -26,7 +26,7 @@ class Results:
             absolute_parties[abs_parties] = absolute_parties[abs_parties] + 1
         absolute_party_percentage = [round(int(count) / no_rounds, 2) for count in absolute_parties]
 
-        #print('Run: ' + str(run[0]) + ' level: ' + str(run[1]))
+        print('Run: ' + str(run[0]) + ' level: ' + str(run[1]))
         print('Absolute Number of parties:')
         print('1: ' + str(absolute_party_percentage[1]))
         print('2: ' + str(absolute_party_percentage[2]))
@@ -54,7 +54,7 @@ class Results:
         if select.fetchone()[0] == 0:
             print('Table does not exist')
             self.db.execute('''create table run
-                            (id number primary key,
+                            (id integer primary key,
                              level number,
                              no_of_agents number,
                              no_of_parties number
@@ -67,10 +67,10 @@ class Results:
         if select.fetchone()[0] == 0:
             print('Table does not exist') #could make an election table but not extensible with number of parties unknown
             self.db.execute('''create table round
-                            (id number primary key,
+                            (id integer primary key,
                              vote_share text,
                              vote_count text,
-                             run_id number not null,
+                             run_id integer not null,
                              foreign key (run_id) references run (id)
                             );''')
         else:
@@ -80,10 +80,7 @@ class Results:
         self.create_run_table()
         self.create_round_table()
 
-if __name__ == '__main__':
-    results = Results()
-    results.get_absolute_party_result(run_id=1)
-    #results.db.execute('drop table run')
-    #results.db.execute('drop table round')
-    #results.db.commit()
-    #DROP TABLES AND DO ABS ETC
+#if __name__ == '__main__':
+    #results = Results()
+    #results.get_absolute_party_result(run_id=1)
+
