@@ -52,20 +52,16 @@ class Results:
     def create_run_table(self):
         select = self.db.execute("select count(*) from sqlite_master where type='table' and name='run'")
         if select.fetchone()[0] == 0:
-            print('Table does not exist')
             self.db.execute('''create table run
                             (id integer primary key,
                              level number,
                              no_of_agents number,
                              no_of_parties number
                             );''')
-        else:
-            print('Table exists')
 
     def create_round_table(self):
         select = self.db.execute("select count(*) from sqlite_master where type='table' and name='round'")
-        if select.fetchone()[0] == 0:
-            print('Table does not exist') #could make an election table but not extensible with number of parties unknown
+        if select.fetchone()[0] == 0: #could make an election table but not extensible with number of parties unknown
             self.db.execute('''create table round
                             (id integer primary key,
                              vote_share text,
@@ -73,8 +69,6 @@ class Results:
                              run_id integer not null,
                              foreign key (run_id) references run (id)
                             );''')
-        else:
-            print('Table exists')
 
     def create_results(self):
         self.create_run_table()

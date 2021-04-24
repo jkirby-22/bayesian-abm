@@ -3,6 +3,7 @@ from agent import Agent
 from party import Party
 from environment import Environment
 from results import Results
+import sys
 from barycentric_system import BarycentricSystem
 
 class Simulation: #Do we need a class for this?
@@ -82,6 +83,7 @@ class Simulation: #Do we need a class for this?
         sim.create_agents()
         sim.create_parties()
         self.inital_election()
+        print('Initial Election: ' + str(self.get_vote_share()))
         for i in range(0, no_elections):
             self.election(level)
         results = { #not extensible will have to change this code if you want different results
@@ -107,9 +109,7 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
-    level_5_id = sim.run(no_elections=20, level=5, rounds=1000)
-    sim.results.get_absolute_party_result(level_5_id)
-    level_6_id = sim.run(no_elections=20, level=6, rounds=1000)
-    sim.results.get_absolute_party_result(level_6_id)
-    #agent.vote(parties=sim.party, environment=sim.environment, level=1)
+    print('Level: ' + str(sys.argv[1]))
+    print('Final Election: ' + str(sim.round(20, int(sys.argv[1]))['vote_share']))
+
 
