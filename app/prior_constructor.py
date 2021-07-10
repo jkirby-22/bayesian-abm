@@ -2,7 +2,9 @@ import math
 class PriorConstructor:
 
     def __init__(self):
-        self.population = 3
+
+        self.population_votes = [1, 1, 2]
+        self.population = len(self.population_votes)
         self.candidates = 3
         self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1) #check
         self.win_events = self.get_win_events()
@@ -12,6 +14,9 @@ class PriorConstructor:
         self.y_marginal = []
         self.z_marginal = []
 
+        self.unobserved = self.population_votes
+        self.observed = []
+
         self.marginalise_distributions()
 
     def print_members(self):
@@ -20,6 +25,79 @@ class PriorConstructor:
         print('x marginal: ' + str(self.x_marginal))
         print('y marginal: ' + str(self.y_marginal))
         print('z marginal: ' + str(self.z_marginal))
+
+    def remaining(self, i, candidate):
+        count = 0
+        for vote in self.observed:
+            if vote == candidate:
+                count += 1
+        remaining = i - count
+        if remaining < 0:
+            remaining = 0
+        return remaining
+
+    def x_liklihood(self, y, i):
+        sample = len(self.unobserved)
+        remaining = self.remaining(i, 1)
+        if y == 1:
+            return remaining / sample
+        else:
+            return (sample - remaining) / sample
+
+    def y_liklihood(self, y, i):
+        sample = len(self.unobserved)
+        remaining = self.remaining(i, 2)
+        if y == 2:
+            return remaining / sample
+        else:
+            return (sample - remaining) / sample
+
+    def z_liklihood(self, y, i):
+        sample = len(self.unobserved)
+        remaining = self.remaining(i, 3)
+        if y == 3:
+            return remaining / sample
+        else:
+            return (sample - remaining) / sample
+
+    def bayesian_step(self):
+        y = self.unobserved[0] #change
+        #print('y: ' + str(y))
+        top = [] #liklihood * prior for given x and y
+        bottom = 0 #total liklihood x prior for given y
+
+        #Candidate 1
+        for index in range(0, self.population + 1):
+            value = self.x_marginal[index] * self.x_liklihood(y, index)
+            top.append(value)
+            bottom += value
+        for index in range(0, self.population + 1):
+            self.x_marginal[index] = top[index] / bottom
+
+        #Candidate 2
+        top = []
+        bottom = 0
+        for index in range(0, self.population + 1):
+            value = self.y_marginal[index] * self.y_liklihood(y, index)
+            top.append(value)
+            bottom += value
+        for index in range(0, self.population + 1):
+            self.y_marginal[index] = top[index] / bottom
+
+        # Candidate 3
+        top = []
+        bottom = 0
+        for index in range(0, self.population + 1):
+            value = self.z_marginal[index] * self.z_liklihood(y, index)
+            top.append(value)
+            bottom += value
+        for index in range(0, self.population + 1):
+            self.z_marginal[index] = top[index] / bottom
+
+        self.observed.append(self.unobserved.pop(0))
+        print('Candidate x posterior: ' + str(self.x_marginal))
+        print('Candidate y posterior: ' + str(self.y_marginal))
+        print('Candidate z posterior: ' + str(self.z_marginal))
 
     def nCr(self, n, r):
         f = math.factorial
@@ -101,6 +179,8 @@ class PriorConstructor:
 if __name__ == '__main__':
     constructor = PriorConstructor()
     constructor.print_members()
+    print(constructor.get_most_likely_events())
+    constructor.bayesian_step()
     print(constructor.get_most_likely_events())
 
 

@@ -1,7 +1,7 @@
 import math
 class BayesianInference:
     def __init__(self):
-        self.population = [1, 3, 2, 3, 1]
+        self.population = [1, 3, 2]
         self.step = 0
 
         v1_prior = []
@@ -11,22 +11,6 @@ class BayesianInference:
 
         self.unobserved = self.population
         self.observed = []
-
-    def optimist_pmf(self, i):
-        population = len(self.population)
-        majority = math.floor((population / 2) + 1)
-        if i >= majority:
-            return round((0.6 / ((population + 1) - majority)), 2)
-        else:
-            return 0.4 / majority #check!
-
-    def skeptic_pmf(self, i):
-        population = len(self.population)
-        majority = math.floor((population / 2) + 1)
-        if i < majority:
-            return math.sqrt(round((0.6 / majority), 2)) #CHEKC THIS
-        else:
-            return math.sqrt((0.4 / ((population + 1) - majority))) #check!
 
     def remaining(self, i, candidate):
         count = 0
