@@ -80,10 +80,28 @@ class PriorConstructor:
                 sum = sum + self.optimist_pmf(x, y, z)
             self.z_marginal.append(sum)
 
+    def get_most_likely_events(self):
+        events = []
+        max_probability = 0
+        #could potentially make this more effecient as loop over repeats
+        for x in range(0, self.population + 1):
+            for y in range(0, (self.population - x) + 1):
+                z = (self.population - x) - y
+                event_probability = (1 / self.stars_and_bars(stars=self.population - x, bars=self.candidates - 2)) * self.x_marginal[x]
+                if event_probability > max_probability:
+                    events = [x, y, z]
+                    max_probability = event_probability
+
+                elif event_probability == max_probability:
+                    events.append([x, y, z])
+
+        return [events, max_probability]
+
 
 if __name__ == '__main__':
     constructor = PriorConstructor()
     constructor.print_members()
+    print(constructor.get_most_likely_events())
 
 
 #0.6 / number of events in which x > y and y > z
