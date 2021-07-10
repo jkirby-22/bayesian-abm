@@ -3,7 +3,7 @@ class PriorConstructor:
 
     def __init__(self):
 
-        self.population_votes = [1, 1, 2]
+        self.population_votes = [1, 1, 1, 2, 3]
         self.population = len(self.population_votes)
         self.candidates = 3
         self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1) #check
@@ -17,7 +17,7 @@ class PriorConstructor:
         self.unobserved = self.population_votes
         self.observed = []
 
-        self.marginalise_distributions()
+        self.marginalise_distributions_standard()
 
     def print_members(self):
         print('vote events: ' + str(self.vote_events))
@@ -134,6 +134,33 @@ class PriorConstructor:
         else:
             return 0.4 / (self.vote_events - self.win_events)
 
+    def standard_pmf(self):
+        return 1 / self.vote_events
+
+    def marginalise_distributions_standard(self):
+
+        for x in range(0, self.population + 1):
+            sum = 0
+            for y in range(0, (self.population - x) + 1):
+                z = (self.population - x) - y #redundant brackets
+                sum = sum + self.standard_pmf()
+            self.x_marginal.append(sum)
+
+        #NEED TO CHECK THE Y AND Z MARGINALS!
+        for y in range(0, self.population + 1):
+            sum = 0
+            for z in range(0, (self.population - y) + 1):
+                x = (self.population - y) - z #redundant brackets
+                sum = sum + self.standard_pmf()
+            self.y_marginal.append(sum)
+
+        for z in range(0, self.population + 1):
+            sum = 0
+            for x in range(0, (self.population - z) + 1):
+                y = (self.population - z) - x #redundant brackets
+                sum = sum + self.standard_pmf()
+            self.z_marginal.append(sum)
+
     def marginalise_distributions(self):
 
         for x in range(0, self.population + 1):
@@ -159,13 +186,27 @@ class PriorConstructor:
             self.z_marginal.append(sum)
 
     def get_most_likely_events(self):
+        sum = 0
         events = []
         max_probability = 0
-        #could potentially make this more effecient as loop over repeats
         for x in range(0, self.population + 1):
+            if self.x_marginal[x] == 0:
+                continue
             for y in range(0, (self.population - x) + 1):
+                if self.y_marginal[y] == 0:
+                    continue
+
                 z = (self.population - x) - y
-                event_probability = (1 / self.stars_and_bars(stars=self.population - x, bars=self.candidates - 2)) * self.x_marginal[x]
+                if self.z_marginal[z] == 0:
+                    continue
+
+                remaining_events = (self.population - x) + 1 #redundant brackets
+                for i in range(0, (self.population - x) + 1):
+                    if self.y_marginal[i] == 0:
+                        remaining_events = remaining_events - 1
+
+                event_probability = (1 / remaining_events) * self.x_marginal[x]
+                sum = sum + event_probability
                 if event_probability > max_probability:
                     events = [x, y, z]
                     max_probability = event_probability
@@ -173,6 +214,7 @@ class PriorConstructor:
                 elif event_probability == max_probability:
                     events.append([x, y, z])
 
+        print(sum)
         return [events, max_probability]
 
 
@@ -180,6 +222,9 @@ if __name__ == '__main__':
     constructor = PriorConstructor()
     constructor.print_members()
     print(constructor.get_most_likely_events())
+    constructor.bayesian_step()
+    constructor.bayesian_step()
+    constructor.bayesian_step()
     constructor.bayesian_step()
     print(constructor.get_most_likely_events())
 
