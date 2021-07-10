@@ -1,36 +1,22 @@
 import math
 class BayesianInference:
     def __init__(self):
-        self.population = [1, 1, 2, 2, 2]
+        self.population = [1, 3, 2, 3, 1]
         self.step = 0
-        v1_prior = [] #Optimistic cand
+
+        v1_prior = []
         for i in range(0, 6):
             v1_prior.append(self.optimist_pmf(i))
         self.v1_prior = v1_prior
 
-        v2_prior = []
-        for i in range(0, 6):
-            v2_prior.append(self.skeptic_pmf(i))
-        self.v2_prior = v2_prior
-
-        v3_prior = []
-        for i in range(0, 6):
-            v3_prior.append(self.skeptic_pmf(i))
-        self.v3_prior = v3_prior
-
         self.unobserved = self.population
         self.observed = []
-
-        #v3_prior = []
-        #for i in range(0, 6):
-            #v3_prior.append(self.skeptic_pmf(i))
-       #self.v3_prior = v3_prior
 
     def optimist_pmf(self, i):
         population = len(self.population)
         majority = math.floor((population / 2) + 1)
         if i >= majority:
-            return (0.6 / ((population + 1) - majority))
+            return round((0.6 / ((population + 1) - majority)), 2)
         else:
             return 0.4 / majority #check!
 
@@ -38,9 +24,9 @@ class BayesianInference:
         population = len(self.population)
         majority = math.floor((population / 2) + 1)
         if i < majority:
-            return (0.6 / majority) #CHEKC THIS
+            return math.sqrt(round((0.6 / majority), 2)) #CHEKC THIS
         else:
-            return (0.4 / ((population + 1) - majority)) #check!
+            return math.sqrt((0.4 / ((population + 1) - majority))) #check!
 
     def remaining(self, i, candidate):
         count = 0
@@ -64,14 +50,6 @@ class BayesianInference:
         sample = len(self.unobserved)
         remaining = self.remaining(i, 2)
         if y == 2:
-            return remaining / sample
-        else:
-            return (sample - remaining) / sample
-
-    def v3_liklihood(self, y, i):
-        sample = len(self.unobserved)
-        remaining = self.remaining(i, 3)
-        if y == 3:
             return remaining / sample
         else:
             return (sample - remaining) / sample
@@ -110,6 +88,16 @@ class BayesianInference:
             bottom += value
         for index in range(0, 6):
             self.v3_prior[index] = top[index] / bottom
+
+        # Candidate 3 (not v2)
+        top = []
+        bottom = 0
+        for index in range(0, 6):
+            value = self.v2_prior[index] * self.v2_liklihood(y, index)
+            top.append(value)
+            bottom += value
+        for index in range(0, 6):
+            self.v2_prior[index] = top[index] / bottom
 
         self.observed.append(self.unobserved.pop(0))
         print('Candidate 1 posterior: ' + str(inf.v1_prior))
