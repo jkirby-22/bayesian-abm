@@ -3,7 +3,7 @@ class PriorConstructor:
 
     def __init__(self):
 
-        self.population_votes = [1, 1, 1, 2, 3]
+        self.population_votes = [1, 2, 3]
         self.population = len(self.population_votes)
         self.candidates = 3
         self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1) #check
@@ -17,7 +17,7 @@ class PriorConstructor:
         self.unobserved = self.population_votes
         self.observed = []
 
-        self.marginalise_distributions_standard()
+        self.marginalise_distributions()
 
     def print_members(self):
         print('vote events: ' + str(self.vote_events))
@@ -221,10 +221,10 @@ class PriorConstructor:
 if __name__ == '__main__':
     constructor = PriorConstructor()
     constructor.print_members()
+    constructor.bayesian_step()
     print(constructor.get_most_likely_events())
     constructor.bayesian_step()
-    constructor.bayesian_step()
-    constructor.bayesian_step()
+    print(constructor.get_most_likely_events())
     constructor.bayesian_step()
     print(constructor.get_most_likely_events())
 
