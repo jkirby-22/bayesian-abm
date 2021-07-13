@@ -84,6 +84,7 @@ class Simulation: #Do we need a class for this?
         print('Initial Election: ' + str(self.get_vote_share()))
 
         for i in range(0, no_elections):
+            print('Election :' + str(i))
             self.election(level)
 
         results = { #not extensible will have to change this code if you want different results
