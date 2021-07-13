@@ -8,6 +8,7 @@ class Agent:
         self.previous_vote_id = None
         self.barycentric_system = BarycentricSystem() #just for effeciency to not create a new one evverytime
         self.new_vote_id = None
+        self.population = 169 #probably need to clean this up
 
     def get_utility(self, party): #so is utility always a negative number?
         return -1 * ((self.ideology - party.ideology)**2) #check bodmas etc
@@ -55,7 +56,7 @@ class Agent:
                 choice_rating = prospective_rating
         self.new_vote_id = choice.id
 
-    def pure_vote(self, parties): #PUT UTILITY FUNCTION HERE
+    def pure_vote(self, parties): #Votes for party with highest utility based on ideology (Not a strategic vote).
         utility = None
         choice = None
         for party in parties:

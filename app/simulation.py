@@ -14,7 +14,7 @@ class Simulation: #Do we need a class for this?
         self.no_agent = 169
         self.no_party = no_party
         #self.agent = []
-        self.party = []
+        self.party = [] #store in environment
         self.environment = None
         self.results = Results()
         #self.environment = Environment(x=13, y=13) #make this consistent with number of agents
@@ -41,8 +41,7 @@ class Simulation: #Do we need a class for this?
     def create_environment(self, agent):
         self.environment = Environment(x=13, y=13, agent=agent) #make specific to number of agents
 
-    def create_parties(self): #do we need self?
-        #Do we need to take a full sample or take 1 sample per agent?
+    def create_parties(self): #Maybe put this in environment?
         party_ideology_distribution = np.random.randint(self.ideology_low, self.ideology_high, self.no_party)
         id = 0
         for ideology in party_ideology_distribution:
@@ -64,19 +63,18 @@ class Simulation: #Do we need a class for this?
 
         distribution = [round(vote / len(agents), 2) for vote in votes]
         return distribution
+
     def inital_election(self):
         agents = sim.environment.get_agent(id=None)
         for agent in agents:
             elected = agent.pure_vote(self.party)
-            #print('Agent: ' + str(agent.id) + ' Ideology Value: ' + str(agent.ideology))
-            #print('Voted for: ')
-           # print('Party: ' + str(elected.id) + ' Ideology Value: ' + str(elected.ideology))
+
 
     def election(self, level):
         agents = self.environment.get_agent(id=None)
         for agent in agents:
             agent.choose_vote(parties=self.party, environment=self.environment, level=level) #maybe return vote here aswell so no second loop needed?
-        for agent in agents:
+        for agent in agents: #Have to submit it after choice to prevent update or previous vote id
             agent.submit_vote()
 
     def round(self, no_elections, level):
@@ -84,15 +82,18 @@ class Simulation: #Do we need a class for this?
         sim.create_parties()
         self.inital_election()
         print('Initial Election: ' + str(self.get_vote_share()))
+
         for i in range(0, no_elections):
             self.election(level)
+
         results = { #not extensible will have to change this code if you want different results
             "vote_count": self.get_vote_count(),
             "vote_share": self.get_vote_share() #don't need vote share and count as can be deducted
         }
+
+        # garbage colleciton needed or auto?
         self.party = []
         self.environment = None
-        #garbage colleciton needed or auto?
         return results
 
     def run(self, no_elections, level, rounds):
@@ -107,6 +108,7 @@ class Simulation: #Do we need a class for this?
             print('round: ' + str(i) + ' Complete.')
         return run_id
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
+
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
     print('Level: ' + str(sys.argv[1]))

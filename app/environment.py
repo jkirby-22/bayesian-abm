@@ -2,9 +2,8 @@ from node import Node
 import numpy as np
 class Environment:
     def __init__(self, x, y, agent): #must take agent list in as param
-        self.network = [] #np.empty((x, y))
+        self.network = [] #Network is node list but with correct shape
         self.agent = agent
-        #print(self.network.shape)
         self.node = []
         self.x = x
         self.y = y
