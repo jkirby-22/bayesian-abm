@@ -72,6 +72,7 @@ class Simulation: #Do we need a class for this?
 
     def election(self, level):
         agents = self.environment.get_agent(id=None)
+        #agent = self.environment.get_agent(id=0)
         for agent in agents:
             agent.choose_vote(parties=self.party, environment=self.environment, level=level) #maybe return vote here aswell so no second loop needed?
         for agent in agents: #Have to submit it after choice to prevent update or previous vote id

@@ -74,24 +74,24 @@ class Agent:
 
     def x_liklihood(self, y, i, unobserved, observed):
         sample = unobserved
-        remaining = self.remaining(i, 1, observed)
-        if y == 1:
+        remaining = self.remaining(i, 0, observed)
+        if y == 0:
             return remaining / sample
         else:
             return (sample - remaining) / sample
 
     def y_liklihood(self, y, i, unobserved, observed):
         sample = unobserved
-        remaining = self.remaining(i, 2, observed)
-        if y == 2:
+        remaining = self.remaining(i, 1, observed)
+        if y == 1:
             return remaining / sample
         else:
             return (sample - remaining) / sample
 
     def z_liklihood(self, y, i, unobserved, observed): #change to v3 etc!!!!!!
         sample = unobserved
-        remaining = self.remaining(i, 3, observed)
-        if y == 3:
+        remaining = self.remaining(i, 2, observed)
+        if y == 2:
             return remaining / sample
         else:
             return (sample - remaining) / sample
@@ -199,9 +199,23 @@ class Agent:
                     events.append([x, y, z])
 
         #print('Probability sum ' + str(sum))
+        #print(events)
         return [events, max_probability]
 
+    def get_direct_dist(self, environment, level):
+        votes = [0, 0, 0]  # change more modular
+        neighbours = environment.get_neighbour_agents(agent_id=self.id, level=level)
+        for agent in neighbours:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1  # (1 / len(neighbours)) CANT DO THIS FOR SOME REASON EVEN THO MORE EFFECIENT?
+        distribution = [round(vote / len(neighbours), 2) for vote in votes]
+        return distribution
+
     def get_probability_distribution(self, environment, level, no_of_parties): #cant pass agents list as it shouldnt hav e access to that ygm?
+
+        #if self.id == 0:
+            #print('Agent: ' + str(self.id))
+            #print('Pure vote: ' + str(self.pure_vote_id))
+
         observed = []
         unobserved = self.population  #unobserved needs to be the whole pop overwise ou will just treat the distribution as direct anyway
 
@@ -229,6 +243,7 @@ class Agent:
 
         #bayesian steps
         neighbours = environment.get_neighbour_agents(agent_id=self.id, level=level)
+        count = 0
         for agent in neighbours:
             bayesian_outcome = self.bayesian_step(agent=agent, x_marginal=x_marginal, y_marginal=y_marginal, z_marginal=z_marginal, unobserved=unobserved, observed=observed)
             observed.append(agent)
@@ -236,10 +251,59 @@ class Agent:
             x_marginal = bayesian_outcome[0]
             y_marginal = bayesian_outcome[1]
             z_marginal = bayesian_outcome[2]
+            #print(count)
+            count = count + 1
+        if self.id == 0:
+            x = 0
+            y = 0
+            z = 0
+            count = 0
+            #print(self.get_most_likely_events(x_marginal, y_marginal, z_marginal)[0][0])
 
+
+            for x in x_marginal:
+                #print(x)
+                if int(x) == 1:
+                    #print('true')
+                    x = count
+                    break
+                count = count + 1
+            #print(x)
+
+            count = 0
+            for x in y_marginal:
+                if int(x) == 1:
+                    y = count
+                    break
+                count = count + 1
+            #print(y)
+
+            count = 0
+            for x in z_marginal:
+                if int(x) == 1:
+                    z = count
+                    break
+                count = count + 1
+            #print(z)
         #uncompact marginals to get most likely events
+        events = self.get_most_likely_events(x_marginal, y_marginal, z_marginal)[0]
 
-        return self.get_most_likely_events(x_marginal, y_marginal, z_marginal)[0][0] #Need to calculate the most likely event out of list not just take the first item
+        largest_share = 0
+        optimal_event = None
+        for event in events:
+            percentage = [event[0] / 168, event[1] / 168, event[2] / 168]
+            if percentage[self.pure_vote_id] >= largest_share:
+                optimal_event = event
+                largest_share = percentage[self.pure_vote_id]
+
+        optimal_event_share = [optimal_event[0] / 168, optimal_event[1] / 168, optimal_event[2] / 168] #HARDCODED FOR 168!!
+        if self.id == 0:
+            print('Preffered candidate: ' + str(self.pure_vote_id))
+            print('Bayesian: ')
+            print(optimal_event_share)
+            print('Direct: ')
+            print(self.get_direct_dist(environment, level))
+        return percentage #Need to calculate the most likely event out of list not just take the first item
 
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id
