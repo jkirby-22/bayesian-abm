@@ -13,9 +13,23 @@ class Results:
                 count = count + 1
         return count
 
+    def get_strat_vote_percentage(self, run_id):
+        no_rounds = 1  # need to store this in db really!!!!!
+        rounds = self.db.execute('''select strategic_
+                                         from round where run_id = ?''', (run_id,))
+        percentage = 0
+        for round_row in rounds:
+            percentage = percentage + map(float, json.loads(round_row[0]))
+
+        print('Average strat vote percentage: ' + str(percentage / no_rounds))
+
+    def print_results(self, run_id):
+        self.get_absolute_party_result(run_id=run_id)
+        self.get_strat_vote_percentage(run_id=run_id)
+
     def get_absolute_party_result(self, run_id): #return dict 1,2 3
         absolute_parties = [0, 0, 0, 0] #not modular for 4 parties
-        no_rounds = 1000 #need to store this in db really!!!!!
+        no_rounds = 1 #need to store this in db really!!!!!
         run = self.db.execute('''select id, level, no_of_agents, no_of_parties
                               from run where id = ?''', (run_id,)).fetchone()
 
@@ -35,8 +49,9 @@ class Results:
     def insert_round(self, row, run_id):
         vote_share = str(row['vote_share'])
         vote_count = str(row['vote_count'])
-        self.db.execute('''insert into round (vote_share, vote_count, run_id)
-                        values (?, ?, ?)''', (vote_share, vote_count, run_id))
+        strat_percentage = str(row['strategic_vote_percentage'])
+        self.db.execute('''insert into round (vote_share, vote_count, strategic_vote_percentage, run_id)
+                        values (?, ?, ?, ?)''', (vote_share, vote_count, strat_percentage, run_id))
         self.db.commit()
 
     def insert_run(self, row):
@@ -66,6 +81,7 @@ class Results:
                             (id integer primary key,
                              vote_share text,
                              vote_count text,
+                             strategic_vote_percentage text,
                              run_id integer not null,
                              foreign key (run_id) references run (id)
                             );''')

@@ -297,13 +297,13 @@ class Agent:
                 largest_share = percentage[self.pure_vote_id]
 
         optimal_event_share = [optimal_event[0] / 168, optimal_event[1] / 168, optimal_event[2] / 168] #HARDCODED FOR 168!!
-        if self.id == 0:
-            print('Preffered candidate: ' + str(self.pure_vote_id))
-            print('Bayesian: ')
-            print(optimal_event_share)
-            print('Direct: ')
-            print(self.get_direct_dist(environment, level))
-        return percentage #Need to calculate the most likely event out of list not just take the first item
+        #if self.id == 0:
+            #print('Preffered candidate: ' + str(self.pure_vote_id))
+           #print('Bayesian: ')
+            #print(optimal_event_share)
+            #print('Direct: ')
+            #print(self.get_direct_dist(environment, level))
+        return optimal_event_share #Need to calculate the most likely event out of list not just take the first item
 
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id

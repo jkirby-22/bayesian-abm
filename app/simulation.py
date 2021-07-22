@@ -85,12 +85,18 @@ class Simulation: #Do we need a class for this?
         print('Initial Election: ' + str(self.get_vote_share()))
 
         for i in range(0, no_elections):
-            print('Election :' + str(i))
             self.election(level)
+            print('election no: ' + str(i))
+
+        count = 0
+        for agent in self.environment.get_agent(id=None):
+            if agent.pure_vote_id != agent.previous_vote_id:
+                count = count + 1
 
         results = { #not extensible will have to change this code if you want different results
             "vote_count": self.get_vote_count(),
-            "vote_share": self.get_vote_share() #don't need vote share and count as can be deducted
+            "vote_share": self.get_vote_share(), #don't need vote share and count as can be deducted
+            "strategic_vote_percentage": (count / 169)
         }
 
         # garbage colleciton needed or auto?
@@ -114,6 +120,9 @@ class Simulation: #Do we need a class for this?
 if __name__ == '__main__':
     sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
     print('Level: ' + str(sys.argv[1]))
-    print('Final Election: ' + str(sim.round(20, int(sys.argv[1]))['vote_share']))
+    run_id = sim.run(no_elections=5, level=1, rounds=1)
+    sim.results.print_results(run_id)
+
+
 
 
