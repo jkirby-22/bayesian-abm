@@ -21,19 +21,6 @@ class Simulation: #Do we need a class for this?
         self.results = Results()
 
     #Useful for printing, testing and results
-    def get_vote_count(self):
-        votes = [0, 0, 0]  # change more modular
-        for agent in self.agent:
-            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
-        return votes
-
-    def get_vote_share(self):
-        votes = [0, 0, 0]  # change more modular
-        for agent in self.agent:
-            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
-        distribution = [round(vote / len(self.agent), 2) for vote in votes]
-        return distribution
-
     def print_agents(self):
         for agent in self.agent:
             print('Agent: ' + str(agent.id) + ' Ideology Value: ' + str(agent.ideology))
