@@ -76,38 +76,30 @@ class Simulation: #Do we need a class for this?
             agent.submit_vote()
 
     #run procedures
-    def round(self, no_elections, level):
+    def round(self):
+        #Create agents, parties and perform initial election.
         sim.create_agents()
         sim.create_parties()
         self.inital_election()
-        print('Initial Election: ' + str(self.get_vote_share()))
+        #print('Initial Election: ' + str(self.get_vote_share()))
 
-        for i in range(0, no_elections):
-            self.election(level)
-            print('election no: ' + str(i))
-
-        count = 0
-        for agent in self.agent:
-            if agent.pure_vote_id != agent.previous_vote_id:
-                count = count + 1
-
-        results = { #not extensible will have to change this code if you want different results
-            "vote_count": self.get_vote_count(),
-            "vote_share": self.get_vote_share(), #don't need vote share and count as can be deducted
-            "strategic_vote_percentage": (count / 169)
-        }
-
-        # garbage colleciton needed or auto?
-        self.party = []
-        self.environment = None
-        return results
+        #perform elections
+        for i in range(0, self.parameters['no_election']):
+            self.election()
+            #print('election no: ' + str(i))
 
     def run(self):
         run_id = self.results.insert_run(parameters=self.parameters)
         for i in range(0, self.parameters['rounds']):
-            self.results.insert_round(row=self.round(no_elections=no_elections, level=level), run_id=run_id)
-            print('round: ' + str(i) + ' Complete.')
+            self.round()
+            objects = [self.agent, self.party, self.environment]
+            self.results.insert_round(objects=objects, run_id=run_id)
+            self.party = []
+            self.agent = []
+            self.environment = None
+            #print('round: ' + str(i) + ' Complete.')
         return run_id
+
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 
 if __name__ == '__main__':

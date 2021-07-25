@@ -7,6 +7,27 @@ class Results:
         self.create_results()
 
     #Stat methods
+    def get_strat_vote_percentage(self, agent):
+
+        count = 0
+        for voter in agent:
+            if voter.pure_vote_id != voter.previous_vote_id:
+                count = count + 1
+        return (count / len(agent))
+
+    def get_vote_count(self, agent):
+        votes = [0, 0, 0]
+        for voter in agent:
+            votes[voter.previous_vote_id] = votes[voter.previous_vote_id] + 1
+        return votes
+
+    def get_vote_share(self, agent):
+        votes = [0, 0, 0]
+        for voter in agent:
+            votes[voter.previous_vote_id] = votes[voter.previous_vote_id] + 1
+        distribution = [round(vote / len(agent), 2) for vote in votes]
+        return distribution
+
     def get_absolute_party(self, vote_share):
         count = 0
         for vote in vote_share:
@@ -47,10 +68,14 @@ class Results:
         print('2: ' + str(absolute_party_percentage[2]))
         print('3: ' + str(absolute_party_percentage[3]))
 
-    def insert_round(self, row, run_id):
-        vote_share = str(row['vote_share'])
-        vote_count = str(row['vote_count'])
-        strat_percentage = str(row['strategic_vote_percentage'])
+    def insert_round(self, objects, run_id):
+        #proccess stats from objects
+        agent = objects[0]
+        vote_count = self.get_vote_count(agent=agent)
+        vote_share = self.get_vote_share(agent=agent)
+        strat_percentage = self.get_strat_vote_percentage(agent=agent)
+
+        #insert row
         self.db.execute('''insert into round (vote_share, vote_count, strategic_vote_percentage, run_id)
                         values (?, ?, ?, ?)''', (vote_share, vote_count, strat_percentage, run_id))
         self.db.commit()
