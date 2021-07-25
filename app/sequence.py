@@ -1,4 +1,3 @@
-import numpy as np #put numpy in one file
 from agent import Agent
 from party import Party
 from ideology import Ideology
@@ -7,7 +6,7 @@ from parameters import Parameters
 from results import Results
 import sys
 
-class Simulation: #Do we need a class for this?
+class Sequence:
 
     def __init__(self, mode): #Maybe make ideology modular so it could be multi dimminesional
 
@@ -32,7 +31,7 @@ class Simulation: #Do we need a class for this?
     #Creation procedures
     def create_agents(self):
         agent = []
-        for id in range (0, self.no_agent):
+        for id in range(0, self.no_agent):
             agent.append(Agent(id=id))
         self.agent = self.ideology.assign_agent_ideology(agent)
         self.create_environment(agent)
@@ -79,7 +78,7 @@ class Simulation: #Do we need a class for this?
         run_id = self.results.insert_run(parameters=self.parameters)
         for i in range(0, self.parameters['rounds']):
             self.round()
-            objects = [self.agent, self.party, self.environment]
+            objects = [self.agent, self.party, self.environment, self.parameters]
             self.results.insert_round(objects=objects, run_id=run_id)
             self.party = []
             self.agent = []
@@ -90,7 +89,7 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 
 if __name__ == '__main__':
-    sim = Simulation(mode=sys.argv[1])
+    sim = Sequence(mode=sys.argv[1])
     run_id = sim.run(no_elections=5, level=1, rounds=1)
     sim.results.print_results(run_id)
 

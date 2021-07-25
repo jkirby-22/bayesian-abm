@@ -1,5 +1,4 @@
 from party import Party
-from environment import Environment
 import math
 from barycentric_system import BarycentricSystem
 class Agent:
