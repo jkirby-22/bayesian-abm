@@ -3,17 +3,16 @@ from agent import Agent
 from party import Party
 from ideology import Ideology
 from environment import Environment
+from parameters import Parameters
 from results import Results
 import sys
-from barycentric_system import BarycentricSystem
 
 class Simulation: #Do we need a class for this?
 
-    def __init__(self, ideology_low, ideology_high, no_party): #Maybe make ideology modular so it could be multi dimminesional
+    def __init__(self, mode): #Maybe make ideology modular so it could be multi dimminesional
 
-        self.no_agent = 169
-        self.no_party = no_party
-        self.ideology = Ideology(no_agent=self.no_agent, no_party=self.no_party)
+        self.parameters = Parameters(mode=mode).get_parameters()
+        self.ideology = Ideology(no_agent=self.parameters['no_agent'], no_party=self.parameters['no_agent']) #discuss how you wanna keep all data access in same variablres to avoid potential inconsistencies
 
         self.party = []
         self.agent = []
@@ -103,14 +102,9 @@ class Simulation: #Do we need a class for this?
         self.environment = None
         return results
 
-    def run(self, no_elections, level, rounds):
-        row = {
-            "level": level,
-            "no_of_agents": self.no_agent,
-            "no_of_parties": self.no_party
-        }
-        run_id = self.results.insert_run(row=row)
-        for i in range(0, rounds):
+    def run(self):
+        run_id = self.results.insert_run(parameters=self.parameters)
+        for i in range(0, self.parameters['rounds']):
             self.results.insert_round(row=self.round(no_elections=no_elections, level=level), run_id=run_id)
             print('round: ' + str(i) + ' Complete.')
         return run_id
