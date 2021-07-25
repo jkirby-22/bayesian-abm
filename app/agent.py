@@ -3,9 +3,9 @@ from environment import Environment
 import math
 from barycentric_system import BarycentricSystem
 class Agent:
-    def __init__(self, id, ideology):
+    def __init__(self, id):
         self.id = id
-        self.ideology = ideology
+        self.ideology = None
 
         self.previous_vote_id = None
         self.new_vote_id = None
@@ -18,6 +18,7 @@ class Agent:
         self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1) #might need to put in another file
         self.win_events = self.get_win_events()
 
+    #bayesian methods
     def get_win_events(self):
         i = self.population
         count = 0
@@ -46,21 +47,6 @@ class Agent:
 
     def stars_and_bars(self, stars, bars):
         return self.nCr(stars + bars, bars)
-
-    def get_utility(self, party): #so is utility always a negative number?
-        return -1 * ((self.ideology - party.ideology)**2) #check bodmas etc
-
-    def get_prospective_rating(self, party, pivot_probabilities, parties):
-        rating = 0
-        for p in parties:
-            if p.id != party.id:
-                #explain this with some requirements of ordering ygm
-                if p.id < party.id:
-                    key = str(p.id) + str(party.id)
-                else:
-                    key = str(party.id) + str(p.id)
-                rating = rating + (pivot_probabilities[key] * (self.get_utility(party=party) - self.get_utility(party=p))) #put party out of loop to reduce func calls
-        return rating
 
     def remaining(self, i, candidate, observed): #alot of variable passing here, maybe global is better tbh
         count = 0
@@ -209,8 +195,7 @@ class Agent:
             votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1  # (1 / len(neighbours)) CANT DO THIS FOR SOME REASON EVEN THO MORE EFFECIENT?
         distribution = [round(vote / len(neighbours), 2) for vote in votes]
         return distribution
-
-    def get_probability_distribution(self, environment, level, no_of_parties): #cant pass agents list as it shouldnt hav e access to that ygm?
+    def get_probability_distribution(self, neighbours, no_of_parties): #cant pass agents list as it shouldnt hav e access to that ygm?
 
         #if self.id == 0:
             #print('Agent: ' + str(self.id))
@@ -242,7 +227,6 @@ class Agent:
             z_marginal = marginals[0]
 
         #bayesian steps
-        neighbours = environment.get_neighbour_agents(agent_id=self.id, level=level)
         count = 0
         for agent in neighbours:
             bayesian_outcome = self.bayesian_step(agent=agent, x_marginal=x_marginal, y_marginal=y_marginal, z_marginal=z_marginal, unobserved=unobserved, observed=observed)
@@ -305,16 +289,30 @@ class Agent:
             #print(self.get_direct_dist(environment, level))
         return optimal_event_share #Need to calculate the most likely event out of list not just take the first item
 
+    #prospective and utility methods
+    def get_utility(self, party): #so is utility always a negative number?
+        return -1 * ((self.ideology - party.ideology)**2) #check bodmas etc
+
+    def get_prospective_rating(self, party, pivot_probabilities, parties):
+        rating = 0
+        for p in parties:
+            if p.id != party.id:
+                #explain this with some requirements of ordering ygm
+                if p.id < party.id:
+                    key = str(p.id) + str(party.id)
+                else:
+                    key = str(party.id) + str(p.id)
+                rating = rating + (pivot_probabilities[key] * (self.get_utility(party=party) - self.get_utility(party=p))) #put party out of loop to reduce func calls
+        return rating
+
+    #Interface methods
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id
 
-    def choose_vote(self, parties, environment, level):
-        distribution = self.get_probability_distribution(environment=environment, level=level, no_of_parties=len(parties))
+    def choose_vote(self, parties, neighbours, level):
+        distribution = self.get_probability_distribution(neighbours=neighbours, no_of_parties=len(parties))
         pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
-        #if self.id == 83:
-            #print('p12: ' + str(pivot_probabilities["01"]))
-           # print('p13: ' + str(pivot_probabilities["02"]))
-            #print('p23: ' + str(pivot_probabilities["12"]))
+
         choice = None
         choice_rating = None
         for party in parties:

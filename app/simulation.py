@@ -1,6 +1,7 @@
 import numpy as np #put numpy in one file
 from agent import Agent
 from party import Party
+from ideology import Ideology
 from environment import Environment
 from results import Results
 import sys
@@ -9,15 +10,30 @@ from barycentric_system import BarycentricSystem
 class Simulation: #Do we need a class for this?
 
     def __init__(self, ideology_low, ideology_high, no_party): #Maybe make ideology modular so it could be multi dimminesional
-        self.ideology_low = ideology_low
-        self.ideology_high = ideology_high
+
         self.no_agent = 169
         self.no_party = no_party
-        #self.agent = []
-        self.party = [] #store in environment
+        self.ideology = Ideology(no_agent=self.no_agent, no_party=self.no_party)
+
+        self.party = []
+        self.agent = []
+
         self.environment = None
         self.results = Results()
-        #self.environment = Environment(x=13, y=13) #make this consistent with number of agents
+
+    #Useful for printing, testing and results
+    def get_vote_count(self):
+        votes = [0, 0, 0]  # change more modular
+        for agent in self.agent:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
+        return votes
+
+    def get_vote_share(self):
+        votes = [0, 0, 0]  # change more modular
+        for agent in self.agent:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
+        distribution = [round(vote / len(self.agent), 2) for vote in votes]
+        return distribution
 
     def print_agents(self):
         for agent in self.agent:
@@ -27,57 +43,40 @@ class Simulation: #Do we need a class for this?
         for party in self.party:
             print('Party: ' + str(party.id) + ' Ideology Value: ' + str(party.ideology))
 
-    def create_agents(self): #do we need self?
-        #Do we need to take a full sample or take 1 sample per agent?
-        agent_ideology_distribution = np.random.randint(self.ideology_low, self.ideology_high, self.no_agent) #is this the right dist?, use =parameters
-        id = 0
+    #Creation procedures
+    def create_agents(self):
         agent = []
-        for ideology in agent_ideology_distribution:
-            agent.append(Agent(id=id, ideology=ideology))
-            id += 1
-        #np.reshape(self.agent, (13, 13))
+        for id in range (0, self.no_agent):
+            agent.append(Agent(id=id))
+        self.agent = self.ideology.assign_agent_ideology(agent)
         self.create_environment(agent)
 
     def create_environment(self, agent):
-        self.environment = Environment(x=13, y=13, agent=agent) #make specific to number of agents
+        self.environment = Environment(agent=agent) #make specific to number of agents
+        self.environment.build_network(agent=agent)
 
     def create_parties(self): #Maybe put this in environment?
-        party_ideology_distribution = np.random.randint(self.ideology_low, self.ideology_high, self.no_party)
-        id = 0
-        for ideology in party_ideology_distribution:
-            self.party.append(Party(id=id, ideology=ideology))
-            id += 1
+        party = []
+        for id in range(0, self.no_agent):
+            self.party.append(Party(id=id))
+        self.party = self.ideology.assign_party_ideology(party)
 
-    def get_vote_count(self):
-        agents = sim.environment.get_agent(id=None)
-        votes = [0, 0, 0]  # change more modular
-        for agent in agents:
-            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
-        return votes
-
-    def get_vote_share(self):
-        agents = sim.environment.get_agent(id=None)
-        votes = [0, 0, 0]  # change more modular
-        for agent in agents:
-            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
-
-        distribution = [round(vote / len(agents), 2) for vote in votes]
-        return distribution
-
+    #Election procedures
     def inital_election(self):
-        agents = sim.environment.get_agent(id=None)
-        for agent in agents:
+        for agent in self.agent:
             elected = agent.pure_vote(self.party)
 
-
     def election(self, level):
-        agents = self.environment.get_agent(id=None)
-        #agent = self.environment.get_agent(id=0)
-        for agent in agents:
-            agent.choose_vote(parties=self.party, environment=self.environment, level=level) #maybe return vote here aswell so no second loop needed?
-        for agent in agents: #Have to submit it after choice to prevent update or previous vote id
+        for agent in self.agent:
+            neighbours = []
+            for id in self.environment.get_neighbour_ids(agent_id=agent.id, level=level): #Maybe functionalise?
+                neighbours.append(self.agent[id])
+
+            agent.choose_vote(parties=self.party, neighbours=neighbours, level=level) #TRADE OFF HERE 1!!!! INN THE LOOP ABOVE!!
+        for agent in self.agent: #Have to submit it after choice to prevent update or previous vote id
             agent.submit_vote()
 
+    #run procedures
     def round(self, no_elections, level):
         sim.create_agents()
         sim.create_parties()
@@ -89,7 +88,7 @@ class Simulation: #Do we need a class for this?
             print('election no: ' + str(i))
 
         count = 0
-        for agent in self.environment.get_agent(id=None):
+        for agent in self.agent:
             if agent.pure_vote_id != agent.previous_vote_id:
                 count = count + 1
 
@@ -118,8 +117,7 @@ class Simulation: #Do we need a class for this?
     #Keep tests for class in file using main (ref: https://stackoverflow.com/questions/22492162/understanding-the-main-method-of-python)
 
 if __name__ == '__main__':
-    sim = Simulation(ideology_low=1, ideology_high=100, no_party=3)
-    print('Level: ' + str(sys.argv[1]))
+    sim = Simulation(mode=sys.argv[1])
     run_id = sim.run(no_elections=5, level=1, rounds=1)
     sim.results.print_results(run_id)
 

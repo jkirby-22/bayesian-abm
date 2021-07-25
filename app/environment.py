@@ -3,34 +3,27 @@ import numpy as np
 class Environment:
     def __init__(self, x, y, agent): #must take agent list in as param
         self.network = [] #Network is node list but with correct shape
-        self.agent = agent
         self.node = []
-        self.x = x
-        self.y = y
+
+    def build_network(self, agent):
         id = 0
-        for i in range(0, x):
+        for x in range(0, 13):
             self.network.append([])
-            for z in range(0, y):
-                node = Node(id=id, x=i, y=z, agent_id=agent[id].id)
-                self.network[i].append(node)
+            for y in range(0, y):
+                node = Node(id=id, x=x, y=y, agent_id=agent[id].id)
+                self.network[x].append(node)
                 self.node.append(node)
                 id += 1
         np.reshape(self.network, (x, y))
 
-    def get_agent(self, id):
-        if id is None:
-            return self.agent
-        else:
-            return self.agent[id]
-
     def get_node(self, agent_id):
         return self.node[agent_id]
 
-    def get_neighbour_agents(self, agent_id, level): #not most effecient but more modular, discuss or review
+    def get_neighbour_ids(self, agent_id, level): #not most effecient but more modular, discuss or review
         nodes = self.get_neighbour_nodes(agent_id=agent_id, level=level)
         agents = []
         for node in nodes:
-            agents.append(self.agent[node.agent_id])
+            agents.append(node.agent_id)
         return agents
 
     def get_neighbour_nodes(self, agent_id, level): #this function could deffo be cleaner
