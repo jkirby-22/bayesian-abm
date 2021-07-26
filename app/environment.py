@@ -1,21 +1,25 @@
 from node import Node
 import numpy as np
 class Environment:
-    def __init__(self, parameters): #must take agent list in as param
+    def __init__(self, parameters):
         self.network = [] #Network is node list but with correct shape
         self.node = []
         self.parameters = parameters
+        self.x = None
+        self.y = None
 
     def build_network(self, agent): #Could make more modular?
         id = 0
         for x in range(0, 13):
             self.network.append([])
-            for y in range(0, y):
+            for y in range(0, 13):
                 node = Node(id=id, x=x, y=y, agent_id=agent[id].id)
                 self.network[x].append(node)
                 self.node.append(node)
                 id += 1
-        np.reshape(self.network, (x, y))
+        np.reshape(self.network, (13, 13))
+        self.x = 13 #Not modular at all!
+        self.y = 13
 
     def get_node(self, agent_id):
         return self.node[agent_id]

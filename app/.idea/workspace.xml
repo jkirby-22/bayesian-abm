@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56d3c3ec-4f8b-4a03-a5dc-38a032802ac5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/party.py" beforeDir="false" afterPath="$PROJECT_DIR$/party.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequence.py" beforeDir="false" afterPath="$PROJECT_DIR$/sequence.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,11 +12,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sequence.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="978">
-              <caret line="61" lean-forward="true" selection-start-line="61" selection-end-line="61" />
+            <state relative-caret-position="851">
+              <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#770#883#0" />
@@ -28,6 +24,7 @@
                 <element signature="e#1099#1322#0" />
                 <element signature="e#1523#1712#0" />
                 <element signature="e#1778#1852#0" />
+                <element signature="e#1893#2346#0" />
                 <element signature="e#2397#2653#0" />
                 <element signature="e#2793#3252#0" />
               </folding>
@@ -35,11 +32,15 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/parameters.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/environment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="5" column="29" lean-forward="true" selection-start-line="5" selection-start-column="29" selection-end-line="5" selection-end-column="29" />
+            <state relative-caret-position="794">
+              <caret line="58" column="22" lean-forward="true" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
+                <element signature="e#342#709#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -88,10 +89,10 @@
         <option value="$PROJECT_DIR$/results.py" />
         <option value="$PROJECT_DIR$/simulation.py" />
         <option value="$PROJECT_DIR$/party.py" />
-        <option value="$PROJECT_DIR$/environment.py" />
         <option value="$PROJECT_DIR$/agent.py" />
         <option value="$PROJECT_DIR$/parameters.py" />
         <option value="$PROJECT_DIR$/sequence.py" />
+        <option value="$PROJECT_DIR$/environment.py" />
       </list>
     </option>
   </component>
@@ -175,12 +176,12 @@
       <workItem from="1626947718348" duration="4727000" />
       <workItem from="1627089979806" duration="1031000" />
       <workItem from="1627107316713" duration="15490000" />
-      <workItem from="1627301856052" duration="1632000" />
+      <workItem from="1627301856052" duration="2837000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="131437000" />
+    <option name="totallyTimeSpent" value="132642000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-592" y="-1440" width="2560" height="1440" extended-state="0" />
@@ -275,16 +276,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/environment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
@@ -308,8 +299,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sequence.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="978">
-          <caret line="61" lean-forward="true" selection-start-line="61" selection-end-line="61" />
+        <state relative-caret-position="851">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#770#883#0" />
@@ -317,8 +308,20 @@
             <element signature="e#1099#1322#0" />
             <element signature="e#1523#1712#0" />
             <element signature="e#1778#1852#0" />
+            <element signature="e#1893#2346#0" />
             <element signature="e#2397#2653#0" />
             <element signature="e#2793#3252#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="794">
+          <caret line="58" column="22" lean-forward="true" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#342#709#0" />
           </folding>
         </state>
       </provider>
