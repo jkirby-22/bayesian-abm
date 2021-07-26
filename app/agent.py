@@ -2,15 +2,17 @@ from party import Party
 import math
 from barycentric_system import BarycentricSystem
 class Agent:
-    def __init__(self, id):
+    def __init__(self, id, parameters):
         self.id = id
         self.ideology = None
+
+        self.parameters = parameters
 
         self.previous_vote_id = None
         self.new_vote_id = None
         self.pure_vote_id = None
 
-        self.barycentric_system = BarycentricSystem()  # just for effeciency to not create a new one evverytime
+        self.barycentric_system = BarycentricSystem()
 
         self.population = 168 #probably need to clean this up (excluding ya self because we calculate vote shhare without us)
         self.candidates = 3 #CLEAN UP!!
@@ -308,7 +310,7 @@ class Agent:
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id
 
-    def choose_vote(self, parties, neighbours, level):
+    def choose_vote(self, parties, neighbours):
         distribution = self.get_probability_distribution(neighbours=neighbours, no_of_parties=len(parties))
         pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
 

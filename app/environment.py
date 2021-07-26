@@ -1,11 +1,12 @@
 from node import Node
 import numpy as np
 class Environment:
-    def __init__(self, x, y, agent): #must take agent list in as param
+    def __init__(self, parameters): #must take agent list in as param
         self.network = [] #Network is node list but with correct shape
         self.node = []
+        self.parameters = parameters
 
-    def build_network(self, agent):
+    def build_network(self, agent): #Could make more modular?
         id = 0
         for x in range(0, 13):
             self.network.append([])
@@ -19,8 +20,8 @@ class Environment:
     def get_node(self, agent_id):
         return self.node[agent_id]
 
-    def get_neighbour_ids(self, agent_id, level): #not most effecient but more modular, discuss or review
-        nodes = self.get_neighbour_nodes(agent_id=agent_id, level=level)
+    def get_neighbour_ids(self, agent_id): #not most effecient but more modular, discuss or review
+        nodes = self.get_neighbour_nodes(agent_id=agent_id, level=self.parameters['level'])
         agents = []
         for node in nodes:
             agents.append(node.agent_id)
