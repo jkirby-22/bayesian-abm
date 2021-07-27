@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="56d3c3ec-4f8b-4a03-a5dc-38a032802ac5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,18 +16,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sequence.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="851">
-              <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
+            <state relative-caret-position="1058">
+              <caret line="52" selection-start-line="52" selection-end-line="52" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#770#883#0" />
                 <element signature="e#922#1035#0" />
-                <element signature="e#1099#1322#0" />
-                <element signature="e#1523#1712#0" />
-                <element signature="e#1778#1852#0" />
-                <element signature="e#1893#2346#0" />
-                <element signature="e#2397#2653#0" />
-                <element signature="e#2793#3252#0" />
               </folding>
             </state>
           </provider>
@@ -35,14 +30,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="558">
-              <caret line="194" column="20" selection-start-line="194" selection-start-column="20" selection-end-line="194" selection-end-column="20" />
+            <state relative-caret-position="431">
+              <caret line="186" column="63" lean-forward="true" selection-start-line="186" selection-start-column="63" selection-end-line="186" selection-end-column="63" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
-                <element signature="e#791#1577#0" />
-                <element signature="e#1621#1675#0" />
-                <element signature="e#1728#1763#0" />
-                <element signature="e#4327#4463#0" />
               </folding>
             </state>
           </provider>
@@ -51,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/barycentric_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="51" column="19" lean-forward="true" selection-start-line="51" selection-start-column="19" selection-end-line="51" selection-end-column="19" />
+            <state relative-caret-position="1173">
+              <caret line="51" column="19" selection-start-line="51" selection-start-column="19" selection-end-line="51" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -108,7 +99,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="width" value="1440" />
     <option name="height" value="900" />
   </component>
@@ -186,18 +177,19 @@
       <workItem from="1626947718348" duration="4727000" />
       <workItem from="1627089979806" duration="1031000" />
       <workItem from="1627107316713" duration="15490000" />
-      <workItem from="1627301856052" duration="14015000" />
+      <workItem from="1627301856052" duration="14308000" />
+      <workItem from="1627402975125" duration="481000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="143820000" />
+    <option name="totallyTimeSpent" value="144594000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="802" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1602289" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16237482" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -292,39 +284,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sequence.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="851">
-          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
+        <state relative-caret-position="1058">
+          <caret line="52" selection-start-line="52" selection-end-line="52" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#770#883#0" />
             <element signature="e#922#1035#0" />
-            <element signature="e#1099#1322#0" />
-            <element signature="e#1523#1712#0" />
-            <element signature="e#1778#1852#0" />
-            <element signature="e#1893#2346#0" />
-            <element signature="e#2397#2653#0" />
-            <element signature="e#2793#3252#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/barycentric_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="51" column="19" lean-forward="true" selection-start-line="51" selection-start-column="19" selection-end-line="51" selection-end-column="19" />
+        <state relative-caret-position="1173">
+          <caret line="51" column="19" selection-start-line="51" selection-start-column="19" selection-end-line="51" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="194" column="20" selection-start-line="194" selection-start-column="20" selection-end-line="194" selection-end-column="20" />
+        <state relative-caret-position="431">
+          <caret line="186" column="63" lean-forward="true" selection-start-line="186" selection-start-column="63" selection-end-line="186" selection-end-column="63" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#791#1577#0" />
-            <element signature="e#1621#1675#0" />
-            <element signature="e#1728#1763#0" />
-            <element signature="e#4327#4463#0" />
           </folding>
         </state>
       </provider>

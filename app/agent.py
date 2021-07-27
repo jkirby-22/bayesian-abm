@@ -81,7 +81,7 @@ class Agent:
         for index in range(0, self.population + 1):
             marginal[index] = top[index] / bottom
 
-        return [marginal]
+        return marginal
 
     def optimist_pmf(self, x, y, z): #where x is optimistic candidate
         if x > y and x > z:
@@ -177,14 +177,14 @@ class Agent:
         }
 
         candidate_counts = [0, 0, 0]
-        for agent in observed:
+        for agent in observed: #could move this into bayesian loop
             candidate_counts[agent.previous_vote_id] = candidate_counts[agent.previous_vote_id] + 1
 
         ranges = []
         for i in range(0, 3):
             ranges.append([candidate_counts[i], self.population - (len(observed) - candidate_counts[i])])
 
-        for i in range(0, math.floor(self.population / 2)):
+        for i in range(0, math.floor(self.population / 2) + 1):
             remaining = self.population - (i * 2)
             pivot['01'] = pivot['01'] + self.get_event_probability(candidate=candidate, marginal=marginal,
                                                                    ranges=ranges, x=i, y=i, z=remaining)
