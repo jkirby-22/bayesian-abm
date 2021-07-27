@@ -14,9 +14,9 @@ class Agent:
 
         self.barycentric_system = BarycentricSystem()
 
-        self.population = 168 #probably need to clean this up (excluding ya self because we calculate vote shhare without us)
-        self.candidates = 3 #CLEAN UP!!
-        self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1) #might need to put in another file
+        self.population = parameters['no_agent'] - 1 #Need to write that it excludes the current agent in model write up
+        self.candidates = parameters['no_party'] #needs to be 3 regardless
+        self.vote_events = self.stars_and_bars(stars=self.population, bars=self.candidates - 1)
         self.win_events = self.get_win_events()
 
     #bayesian methods
@@ -59,66 +59,29 @@ class Agent:
             remaining = 0
         return remaining
 
-    def x_liklihood(self, y, i, unobserved, observed):
+    def liklihood(self, y, i, unobserved, observed, candidate):
         sample = unobserved
-        remaining = self.remaining(i, 0, observed)
-        if y == 0:
+        remaining = self.remaining(i, candidate, observed)
+        if y == candidate:
             return remaining / sample
         else:
             return (sample - remaining) / sample
 
-    def y_liklihood(self, y, i, unobserved, observed):
-        sample = unobserved
-        remaining = self.remaining(i, 1, observed)
-        if y == 1:
-            return remaining / sample
-        else:
-            return (sample - remaining) / sample
+    def bayesian_step(self, agent, marginal, unobserved, observed, candidate):
 
-    def z_liklihood(self, y, i, unobserved, observed): #change to v3 etc!!!!!!
-        sample = unobserved
-        remaining = self.remaining(i, 2, observed)
-        if y == 2:
-            return remaining / sample
-        else:
-            return (sample - remaining) / sample
-
-    def bayesian_step(self, agent, x_marginal, y_marginal, z_marginal, unobserved, observed):
-
-        y = agent.previous_vote_id #change
+        y = agent.previous_vote_id #change notation
 
         top = [] #liklihood * prior for given x and y
         bottom = 0 #total liklihood x prior for given y
 
-        #Candidate x
         for index in range(0, self.population + 1):
-            value = x_marginal[index] * self.x_liklihood(y, index, unobserved, observed)
+            value = marginal[index] * self.liklihood(y, index, unobserved, observed, candidate)
             top.append(value)
             bottom += value
         for index in range(0, self.population + 1):
-            x_marginal[index] = top[index] / bottom
+            marginal[index] = top[index] / bottom
 
-        #Candidate y
-        top = []
-        bottom = 0
-        for index in range(0, self.population + 1):
-            value = y_marginal[index] * self.y_liklihood(y, index, unobserved, observed)
-            top.append(value)
-            bottom += value
-        for index in range(0, self.population + 1):
-            y_marginal[index] = top[index] / bottom
-
-        # Candidate z
-        top = []
-        bottom = 0
-        for index in range(0, self.population + 1):
-            value = z_marginal[index] * self.z_liklihood(y, index, unobserved, observed)
-            top.append(value)
-            bottom += value
-        for index in range(0, self.population + 1):
-            z_marginal[index] = top[index] / bottom
-
-        return [x_marginal, y_marginal, z_marginal]
+        return [marginal]
 
     def optimist_pmf(self, x, y, z): #where x is optimistic candidate
         if x > y and x > z:
@@ -126,11 +89,9 @@ class Agent:
         else:
             return 0.4 / (self.vote_events - self.win_events)
 
-    def marginalise_distributions(self):
+    def marginalise_distribution(self):
 
         x_marginal = []
-        y_marginal = []
-        z_marginal = []
 
         for x in range(0, self.population + 1):
             sum = 0
@@ -139,157 +100,99 @@ class Agent:
                 sum = sum + self.optimist_pmf(x, y, z)
             x_marginal.append(sum)
 
-        #NEED TO CHECK THE Y AND Z MARGINALS!
-        for y in range(0, self.population + 1):
-            sum = 0
-            for z in range(0, (self.population - y) + 1):
-                x = (self.population - y) - z #redundant brackets
-                sum = sum + self.optimist_pmf(x, y, z)
-            y_marginal.append(sum)
+        return x_marginal #change these names to optmist pesdsemist etc
 
-        for z in range(0, self.population + 1):
-            sum = 0
-            for x in range(0, (self.population - z) + 1):
-                y = (self.population - z) - x #redundant brackets
-                sum = sum + self.optimist_pmf(x, y, z)
-            z_marginal.append(sum)
+    def get_event_probability(self, candidate, marginal, ranges, x, y, z):
+        if candidate == 0:
+            if marginal[x] == 0:
+                return 0
+            if y < ranges[1][0] or y > ranges[1][1]:
+                return 0
+            if z < ranges[2][0] or z > ranges[2][1]:
+                return 0
 
-        return [x_marginal, y_marginal, z_marginal] #change these names to optmist pesdsemist etc
+            spare = self.population - x
+            remaining_events = spare + 1
+            for j in range(0, spare + 1):
+                if (j < ranges[1][0] or j > ranges[1][1]) or (spare - j < ranges[2][0] or spare - j > ranges[2][1]):
+                    remaining_events = remaining_events - 1
 
-    def get_most_likely_events(self, x_marginal, y_marginal, z_marginal):
-        sum = 0
-        events = []
-        max_probability = 0
-        for x in range(0, self.population + 1):
-            if x_marginal[x] == 0:
-                continue
-            for y in range(0, (self.population - x) + 1):
-                if y_marginal[y] == 0:
-                    continue
+            return (1 / remaining_events) * marginal[x]
 
-                z = (self.population - x) - y
-                if z_marginal[z] == 0:
-                    continue
+        if candidate == 1:
+            if marginal[y] == 0:
+                return 0
+            if x < ranges[0][0] or x > ranges[0][1]:
+                return 0
+            if z < ranges[2][0] or z > ranges[2][1]:
+                return 0
 
-                remaining_events = (self.population - x) + 1 #redundant brackets
-                for i in range(0, (self.population - x) + 1):
-                    if y_marginal[i] == 0:
-                        remaining_events = remaining_events - 1
+            spare = self.population - y
+            remaining_events = spare + 1
+            for j in range(0, spare + 1):
+                if (j < ranges[0][0] or j > ranges[0][1]) or (spare - j < ranges[2][0] or spare - j > ranges[2][1]):
+                    remaining_events = remaining_events - 1
 
-                event_probability = (1 / remaining_events) * x_marginal[x]
-                sum = sum + event_probability
-                if event_probability > max_probability:
-                    events = [[x, y, z]]
-                    max_probability = event_probability
+            return (1 / remaining_events) * marginal[y]
 
-                elif event_probability == max_probability:
-                    events.append([x, y, z])
+        if candidate == 2:
+            if marginal[z] == 0:
+                return 0
+            if x < ranges[0][0] or x > ranges[0][1]:
+                return 0
+            if y < ranges[1][0] or y > ranges[1][1]:
+                return 0
 
-        #print('Probability sum ' + str(sum))
-        #print(events)
-        return [events, max_probability]
+            spare = self.population - z
+            remaining_events = spare + 1
+            for j in range(0, spare + 1):
+                if (j < ranges[1][0] or j > ranges[1][1]) or (spare - j < ranges[0][0] or spare - j > ranges[0][1]):
+                    remaining_events = remaining_events - 1
 
-    def get_direct_dist(self, environment, level):
-        votes = [0, 0, 0]  # change more modular
-        neighbours = environment.get_neighbour_agents(agent_id=self.id, level=level)
-        for agent in neighbours:
-            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1  # (1 / len(neighbours)) CANT DO THIS FOR SOME REASON EVEN THO MORE EFFECIENT?
-        distribution = [round(vote / len(neighbours), 2) for vote in votes]
-        return distribution
-    def get_probability_distribution(self, neighbours, no_of_parties): #cant pass agents list as it shouldnt hav e access to that ygm?
+            return (1 / remaining_events) * marginal[z]
 
-        #if self.id == 0:
-            #print('Agent: ' + str(self.id))
-            #print('Pure vote: ' + str(self.pure_vote_id))
+    def get_pivot_probabilities(self, neighbours): #cant pass agents list as it shouldnt hav e access to that ygm?
 
         observed = []
         unobserved = self.population  #unobserved needs to be the whole pop overwise ou will just treat the distribution as direct anyway
 
-        #construct marginal priors
-        marginals = self.marginalise_distributions()
+        #construct marginal prior
+        marginal = self.marginalise_distribution()
 
-        #PRETTY SUrE MARGINALS FOR 1 AND 2 ARE JSUT DUPLICATES SO CAN CLEAN THAT UP!!
-        if self.pure_vote_id == 0:
-            # CHANGE THESE TO V1, V2 ETC
-            x_marginal = marginals[0]
-            y_marginal = marginals[1]
-            z_marginal = marginals[2]
-
-        if self.pure_vote_id == 1:
-            # CHANGE THESE TO V1, V2 ETC
-            x_marginal = marginals[1]
-            y_marginal = marginals[0]
-            z_marginal = marginals[2]
-
-        if self.pure_vote_id == 2:
-            # CHANGE THESE TO V1, V2 ETC
-            x_marginal = marginals[1]
-            y_marginal = marginals[2]
-            z_marginal = marginals[0]
+        candidate = self.pure_vote_id
 
         #bayesian steps
-        count = 0
         for agent in neighbours:
-            bayesian_outcome = self.bayesian_step(agent=agent, x_marginal=x_marginal, y_marginal=y_marginal, z_marginal=z_marginal, unobserved=unobserved, observed=observed)
+            bayesian_outcome = self.bayesian_step(agent=agent, marginal=marginal, unobserved=unobserved, observed=observed, candidate=candidate)
             observed.append(agent)
             unobserved = unobserved - 1
-            x_marginal = bayesian_outcome[0]
-            y_marginal = bayesian_outcome[1]
-            z_marginal = bayesian_outcome[2]
-            #print(count)
-            count = count + 1
-        if self.id == 0:
-            x = 0
-            y = 0
-            z = 0
-            count = 0
-            #print(self.get_most_likely_events(x_marginal, y_marginal, z_marginal)[0][0])
+            marginal = bayesian_outcome
 
 
-            for x in x_marginal:
-                #print(x)
-                if int(x) == 1:
-                    #print('true')
-                    x = count
-                    break
-                count = count + 1
-            #print(x)
+        #use marginal distributions to sum pivot probabilities
+        pivot = {
+            "01": 0,
+            "12": 0,
+            "02": 0
+        }
 
-            count = 0
-            for x in y_marginal:
-                if int(x) == 1:
-                    y = count
-                    break
-                count = count + 1
-            #print(y)
+        candidate_counts = [0, 0, 0]
+        for agent in observed:
+            candidate_counts[agent.previous_vote_id] = candidate_counts[agent.previous_vote_id] + 1
 
-            count = 0
-            for x in z_marginal:
-                if int(x) == 1:
-                    z = count
-                    break
-                count = count + 1
-            #print(z)
-        #uncompact marginals to get most likely events
-        events = self.get_most_likely_events(x_marginal, y_marginal, z_marginal)[0]
+        ranges = []
+        for i in range(0, 3):
+            ranges.append([candidate_counts[i], self.population - (len(observed) - candidate_counts[i])])
 
-        largest_share = 0
-        optimal_event = None
-        for event in events:
-            percentage = [event[0] / 168, event[1] / 168, event[2] / 168]
-            if percentage[self.pure_vote_id] >= largest_share:
-                optimal_event = event
-                largest_share = percentage[self.pure_vote_id]
-
-        optimal_event_share = [optimal_event[0] / 168, optimal_event[1] / 168, optimal_event[2] / 168] #HARDCODED FOR 168!!
-        #if self.id == 0:
-            #print('Preffered candidate: ' + str(self.pure_vote_id))
-           #print('Bayesian: ')
-            #print(optimal_event_share)
-            #print('Direct: ')
-            #print(self.get_direct_dist(environment, level))
-        return optimal_event_share #Need to calculate the most likely event out of list not just take the first item
-
+        for i in range(0, math.floor(self.population / 2)):
+            remaining = self.population - (i * 2)
+            pivot['01'] = pivot['01'] + self.get_event_probability(candidate=candidate, marginal=marginal,
+                                                                   ranges=ranges, x=i, y=i, z=remaining)
+            pivot['12'] = pivot['12'] + self.get_event_probability(candidate=candidate, marginal=marginal,
+                                                                   ranges=ranges, x=remaining, y=i, z=i)
+            pivot['02'] = pivot['02'] + self.get_event_probability(candidate=candidate, marginal=marginal,
+                                                                   ranges=ranges, x=i, y=remaining, z=i)
+        return pivot
     #prospective and utility methods
     def get_utility(self, party): #so is utility always a negative number?
         return -1 * ((self.ideology - party.ideology)**2) #check bodmas etc
@@ -311,9 +214,8 @@ class Agent:
         self.previous_vote_id = self.new_vote_id
 
     def choose_vote(self, parties, neighbours):
-        distribution = self.get_probability_distribution(neighbours=neighbours, no_of_parties=len(parties))
-        pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
-
+        pivot_probabilities = self.get_pivot_probabilities(neighbours=neighbours, no_of_parties=len(parties))
+        #pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
         choice = None
         choice_rating = None
         for party in parties:
