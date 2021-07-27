@@ -35,16 +35,6 @@ class Results:
                 count = count + 1
         return count
 
-    def get_strat_vote_percentage(self, run_id):
-        no_rounds = 1  # need to store this in db really!!!!!
-        rounds = self.db.execute('''select strategic_
-                                         from round where run_id = ?''', (run_id,))
-        percentage = 0
-        for round_row in rounds:
-            percentage = percentage + map(float, json.loads(round_row[0]))
-
-        print('Average strat vote percentage: ' + str(percentage / no_rounds))
-
     def print_results(self, run_id):
         self.get_absolute_party_result(run_id=run_id)
         self.get_strat_vote_percentage(run_id=run_id)
@@ -71,9 +61,11 @@ class Results:
     def insert_round(self, objects, run_id):
         #proccess stats from objects
         agent = objects[0]
-        vote_count = self.get_vote_count(agent=agent)
-        vote_share = self.get_vote_share(agent=agent)
-        strat_percentage = self.get_strat_vote_percentage(agent=agent)
+        vote_count = str(self.get_vote_count(agent=agent))
+        vote_share = str(self.get_vote_share(agent=agent))
+        strat_percentage = str(self.get_strat_vote_percentage(agent=agent))
+
+        print(vote_share)
 
         #insert row
         self.db.execute('''insert into round (vote_share, vote_count, strategic_vote_percentage, run_id)
@@ -86,8 +78,8 @@ class Results:
         level = parameters['level']
         no_agent = parameters['no_agent']
         no_party = parameters['no_party']
-        no_round = parameters['no_round']
-        no_election = parameters['no_election']
+        no_round = parameters['rounds']
+        no_election = parameters['elections'] #make consistent with no_ !
 
         self.db.execute('''insert into mode (id, level, no_agent, no_party, no_round, no_election)
                                 values (?, ?, ?, ?, ?, ?)''', (id, level, no_agent, no_party, no_round, no_election))
@@ -95,21 +87,21 @@ class Results:
 
     def insert_run(self, parameters):
         #If parameter mode doesn't exist, create it.
-        mode_id = parameters['id']
+        mode_id = int(parameters['id'])
         select = self.db.execute('''select count(*) from mode where id = ?''', (mode_id,))
         if select.fetchone()[0] == 0:
             self.insert_mode(parameters=parameters)
 
         #insert run and return it's id
         row_id = self.db.execute('''insert into run (mode_id)
-                                 values (?)''', (mode_id)).lastrowid
+                                 values (?)''', (mode_id,)).lastrowid
         self.db.commit()
         return row_id
 
     def create_mode_table(self): #no_round is redundnat but still justified. No seperate round level parameters1
         select = self.db.execute("select count(*) from sqlite_master where type='table' and name='mode'")
         if select.fetchone()[0] == 0:
-            self.db.execute('''create table run
+            self.db.execute('''create table mode
                             (id integer primary key,
                              level number,
                              no_agent number,

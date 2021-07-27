@@ -18,7 +18,6 @@ class Ideology:
 
     def assign_party_ideology(self, party):
         party_ideology_distribution = np.random.randint(self.ideology_low, self.ideology_high, self.no_party)
-
         for i in range(0, self.no_party):
             party[i].ideology = party_ideology_distribution[i]
 

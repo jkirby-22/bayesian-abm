@@ -10,8 +10,8 @@ class Sequence:
 
     def __init__(self, mode): #Maybe make ideology modular so it could be multi dimminesional
 
-        self.parameters = Parameters(mode=mode).get_parameters()
-        self.ideology = Ideology(no_agent=self.parameters['no_agent'], no_party=self.parameters['no_agent']) #discuss how you wanna keep all data access in same variablres to avoid potential inconsistencies
+        self.parameters = Parameters(mode=int(mode)).get_parameters()
+        self.ideology = Ideology(no_agent=self.parameters['no_agent'], no_party=self.parameters['no_party']) #discuss how you wanna keep all data access in same variablres to avoid potential inconsistencies
 
         self.party = []
         self.agent = []
@@ -43,7 +43,7 @@ class Sequence:
     def create_parties(self):
         party = []
         for id in range(0, self.parameters['no_party']):
-            self.party.append(Party(id=id, parameters=self.parameters))
+            party.append(Party(id=id, parameters=self.parameters))
         self.party = self.ideology.assign_party_ideology(party)
 
     #Election procedures
@@ -68,7 +68,7 @@ class Sequence:
         self.inital_election()
 
         #perform elections
-        for i in range(0, self.parameters['no_election']):
+        for i in range(0, self.parameters['elections']):
             self.election()
 
     def run(self):

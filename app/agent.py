@@ -214,7 +214,7 @@ class Agent:
         self.previous_vote_id = self.new_vote_id
 
     def choose_vote(self, parties, neighbours):
-        pivot_probabilities = self.get_pivot_probabilities(neighbours=neighbours, no_of_parties=len(parties))
+        pivot_probabilities = self.get_pivot_probabilities(neighbours=neighbours)
         #pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
         choice = None
         choice_rating = None
