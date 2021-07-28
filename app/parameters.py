@@ -17,7 +17,16 @@ class Parameters:
             return {
             "id": 1,
             "level": 2,
-            "no_agents": 169,
+            "no_agent": 169,
+            "rounds": 1,
+            "elections": 5,
+            "no_party": 3
+            }
+        elif self.mode == 2: #changE!!!!
+            return {
+            "id": 2,
+            "level": 6,
+            "no_agent": 169,
             "rounds": 1,
             "elections": 5,
             "no_party": 3

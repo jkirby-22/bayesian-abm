@@ -8,7 +8,6 @@ class Results:
 
     #Stat methods
     def get_strat_vote_percentage(self, agent):
-
         count = 0
         for voter in agent:
             if voter.pure_vote_id != voter.previous_vote_id:

@@ -49,7 +49,7 @@ class Agent:
     def stars_and_bars(self, stars, bars):
         return self.nCr(stars + bars, bars)
 
-    def remaining(self, i, candidate, observed): #alot of variable passing here, maybe global is better tbh
+    def remaining(self, i, candidate, observed cd.): #alot of variable passing here, maybe global is better tbh
         count = 0
         for agent in observed:
             if agent.previous_vote_id == candidate:
@@ -162,12 +162,19 @@ class Agent:
         candidate = self.pure_vote_id
 
         #bayesian steps
+        #if self.id == 0:
+            #print('pure vote: ' + str(self.pure_vote_id))
         for agent in neighbours:
             bayesian_outcome = self.bayesian_step(agent=agent, marginal=marginal, unobserved=unobserved, observed=observed, candidate=candidate)
             observed.append(agent)
             unobserved = unobserved - 1
             marginal = bayesian_outcome
-
+            #if self.id == 0:
+                #obs = []
+               # for ag in observed:
+                    #obs.append(ag.previous_vote_id)
+                #print(obs)
+                #print(marginal)
 
         #use marginal distributions to sum pivot probabilities
         pivot = {

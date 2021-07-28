@@ -4,6 +4,7 @@ from ideology import Ideology
 from environment import Environment
 from parameters import Parameters
 from results import Results
+import cProfile
 import sys
 
 class Sequence:
@@ -28,6 +29,13 @@ class Sequence:
         for party in self.party:
             print('Party: ' + str(party.id) + ' Ideology Value: ' + str(party.ideology))
 
+    def get_vote_share(self):
+        votes = [0, 0, 0]
+        for voter in self.agent:
+            votes[voter.previous_vote_id] = votes[voter.previous_vote_id] + 1
+        distribution = [round(vote / len(self.agent), 2) for vote in votes]
+        return distribution
+
     #Creation procedures
     def create_agents(self):
         agent = []
@@ -50,6 +58,9 @@ class Sequence:
     def inital_election(self):
         for agent in self.agent:
             agent.pure_vote(parties=self.party)
+        print('initial election: ')
+        print(self.get_vote_share())
+
 
     def election(self):
         for agent in self.agent:
@@ -89,8 +100,8 @@ class Sequence:
 
 if __name__ == '__main__':
     sim = Sequence(mode=sys.argv[1])
-    run_id = sim.run()
-    sim.results.print_results(run_id)
+    cProfile.run('sim.run()')
+    #sim.results.print_results(run_id)
 
 
 
