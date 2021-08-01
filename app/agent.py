@@ -49,25 +49,21 @@ class Agent:
     def stars_and_bars(self, stars, bars):
         return self.nCr(stars + bars, bars)
 
-    def remaining(self, i, candidate, observed cd.): #alot of variable passing here, maybe global is better tbh
-        count = 0
-        for agent in observed:
-            if agent.previous_vote_id == candidate:
-                count += 1
-        remaining = i - count
+    def remaining(self, i, candidate, candidate_counts): #alot of variable passing here, maybe global is better tbh
+        remaining = i - candidate_counts[candidate]
         if remaining < 0:
             remaining = 0
         return remaining
 
-    def liklihood(self, y, i, unobserved, observed, candidate):
+    def liklihood(self, y, i, unobserved, candidate, candidate_counts):
         sample = unobserved
-        remaining = self.remaining(i, candidate, observed)
+        remaining = self.remaining(i, candidate, candidate_counts)
         if y == candidate:
             return remaining / sample
         else:
             return (sample - remaining) / sample
 
-    def bayesian_step(self, agent, marginal, unobserved, observed, candidate):
+    def bayesian_step(self, agent, marginal, unobserved, candidate, candidate_counts):
 
         y = agent.previous_vote_id #change notation
 
@@ -75,7 +71,15 @@ class Agent:
         bottom = 0 #total liklihood x prior for given y
 
         for index in range(0, self.population + 1):
-            value = marginal[index] * self.liklihood(y, index, unobserved, observed, candidate)
+            sample = unobserved
+            remaining = index - candidate_counts[candidate]
+            if remaining < 0:
+                remaining = 0
+            if y == candidate
+                value = marginal[index] * (remaining / sample)
+            else:
+                value = marginal[index] * ((sample - remaining) / sample)
+            #value = marginal[index] * self.liklihood(y, index, unobserved, candidate, candidate_counts)
             top.append(value)
             bottom += value
         for index in range(0, self.population + 1):
@@ -160,32 +164,20 @@ class Agent:
         marginal = self.marginalise_distribution()
 
         candidate = self.pure_vote_id
-
-        #bayesian steps
-        #if self.id == 0:
-            #print('pure vote: ' + str(self.pure_vote_id))
+        candidate_counts = [0, 0, 0]
         for agent in neighbours:
-            bayesian_outcome = self.bayesian_step(agent=agent, marginal=marginal, unobserved=unobserved, observed=observed, candidate=candidate)
+            bayesian_outcome = self.bayesian_step(agent=agent, marginal=marginal, unobserved=unobserved, candidate=candidate, candidate_counts=candidate_counts)
             observed.append(agent)
+            candidate_counts[agent.previous_vote_id] = candidate_counts[agent.previous_vote_id] + 1
             unobserved = unobserved - 1
             marginal = bayesian_outcome
-            #if self.id == 0:
-                #obs = []
-               # for ag in observed:
-                    #obs.append(ag.previous_vote_id)
-                #print(obs)
-                #print(marginal)
 
-        #use marginal distributions to sum pivot probabilities
+        #use marginal distribution to sum pivot probabilities
         pivot = {
             "01": 0,
             "12": 0,
             "02": 0
         }
-
-        candidate_counts = [0, 0, 0]
-        for agent in observed: #could move this into bayesian loop
-            candidate_counts[agent.previous_vote_id] = candidate_counts[agent.previous_vote_id] + 1
 
         ranges = []
         for i in range(0, 3):
