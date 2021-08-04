@@ -1,10 +1,10 @@
-from party import Party
+import numpy as np
 import math
 from barycentric_system import BarycentricSystem
 class Agent:
     def __init__(self, id, parameters):
         self.id = id
-        self.ideology = None
+        self.ideology = np.random.randint(1, 100) #sample ideology from a uniform distribution
 
         self.parameters = parameters
 
@@ -20,42 +20,52 @@ class Agent:
         self.win_events = self.get_win_events()
 
     #bayesian methods
+
     def get_win_events(self):
         i = self.population
         count = 0
         while True:
-            spare = self.population - i
+            spare = self.population - i #number of outcomes for a given i
             if i > spare:
                 count = count + self.stars_and_bars(stars=spare, bars=self.candidates - 2) #hard coded for 3 candidates (might aswell put 1 tbh)
 
             else:
                 minority_count = ((spare - i) + 1) * 2 #redundant brackets
-                count = count + (self.stars_and_bars(stars=spare, bars=self.candidates - 2) - minority_count) #redundant brackets
+                count = count + (self.stars_and_bars(stars=spare, bars=self.candidates - 2) - minority_count)
 
-            #fix this! bad code! just do the while loop maybe
             i = i - 1
             spare = self.population - i
+
             if spare == 0:
                 continue
-            #check for when rounded
+
             if round(spare / 2) >= i:
                 break
+
         return count
 
-    def nCr(self, n, r): #static?
+    def get_direct_dist(self, neighbours): #for clough comparison
+        votes = [0, 0, 0]
+        for agent in neighbours:
+            votes[agent.previous_vote_id] = votes[agent.previous_vote_id] + 1
+
+        distribution = [round(vote / len(neighbours), 2) for vote in votes]
+        return distribution
+
+    def nCr(self, n, r): #binomial coefficient
         f = math.factorial
         return f(n) / f(r) / f(n-r)
 
-    def stars_and_bars(self, stars, bars):
+    def stars_and_bars(self, stars, bars): #balls and urn technique
         return self.nCr(stars + bars, bars)
 
-    def remaining(self, i, candidate, candidate_counts): #alot of variable passing here, maybe global is better tbh
+    def remaining(self, i, candidate, candidate_counts):
         remaining = i - candidate_counts[candidate]
         if remaining < 0:
             remaining = 0
         return remaining
 
-    def liklihood(self, y, i, unobserved, candidate, candidate_counts):
+    def liklihood(self, y, i, unobserved, candidate, candidate_counts): #liklihood function for bayesian step
         sample = unobserved
         remaining = self.remaining(i, candidate, candidate_counts)
         if y == candidate:
@@ -65,7 +75,7 @@ class Agent:
 
     def bayesian_step(self, agent, marginal, unobserved, candidate, candidate_counts):
 
-        y = agent.previous_vote_id #change notation
+        y = agent.previous_vote_id
 
         top = [] #liklihood * prior for given x and y
         bottom = 0 #total liklihood x prior for given y
@@ -75,11 +85,10 @@ class Agent:
             remaining = index - candidate_counts[candidate]
             if remaining < 0:
                 remaining = 0
-            if y == candidate
+            if y == candidate:
                 value = marginal[index] * (remaining / sample)
             else:
                 value = marginal[index] * ((sample - remaining) / sample)
-            #value = marginal[index] * self.liklihood(y, index, unobserved, candidate, candidate_counts)
             top.append(value)
             bottom += value
         for index in range(0, self.population + 1):
@@ -96,17 +105,17 @@ class Agent:
     def marginalise_distribution(self):
 
         x_marginal = []
-
         for x in range(0, self.population + 1):
             sum = 0
             for y in range(0, (self.population - x) + 1):
-                z = (self.population - x) - y #redundant brackets
+                z = (self.population - x) - y
                 sum = sum + self.optimist_pmf(x, y, z)
             x_marginal.append(sum)
 
-        return x_marginal #change these names to optmist pesdsemist etc
+        return x_marginal
 
-    def get_event_probability(self, candidate, marginal, ranges, x, y, z):
+    def get_event_probability(self, candidate, marginal, ranges, x, y, z): #calculate an event probability using the conditional probability and the marginal distribution
+
         if candidate == 0:
             if marginal[x] == 0:
                 return 0
@@ -155,16 +164,14 @@ class Agent:
 
             return (1 / remaining_events) * marginal[z]
 
-    def get_pivot_probabilities(self, neighbours): #cant pass agents list as it shouldnt hav e access to that ygm?
+    def get_pivot_probabilities(self, neighbours): #interact with neighbourhood then calculate pivot probabilities
 
         observed = []
-        unobserved = self.population  #unobserved needs to be the whole pop overwise ou will just treat the distribution as direct anyway
-
-        #construct marginal prior
-        marginal = self.marginalise_distribution()
+        unobserved = self.population
+        marginal = self.marginalise_distribution() #construct marginal prior
 
         candidate = self.pure_vote_id
-        candidate_counts = [0, 0, 0]
+        candidate_counts = [0, 0, 0] #keeps counts of observed candidates for conditional probability function
         for agent in neighbours:
             bayesian_outcome = self.bayesian_step(agent=agent, marginal=marginal, unobserved=unobserved, candidate=candidate, candidate_counts=candidate_counts)
             observed.append(agent)
@@ -180,11 +187,13 @@ class Agent:
         }
 
         ranges = []
-        for i in range(0, 3):
+        for i in range(0, 3): #calculate the acceptable possible vote counts based on observations
             ranges.append([candidate_counts[i], self.population - (len(observed) - candidate_counts[i])])
 
         for i in range(0, math.floor(self.population / 2) + 1):
             remaining = self.population - (i * 2)
+            if i + 1 < remaining - 1:
+                continue
             pivot['01'] = pivot['01'] + self.get_event_probability(candidate=candidate, marginal=marginal,
                                                                    ranges=ranges, x=i, y=i, z=remaining)
             pivot['12'] = pivot['12'] + self.get_event_probability(candidate=candidate, marginal=marginal,
@@ -192,28 +201,31 @@ class Agent:
             pivot['02'] = pivot['02'] + self.get_event_probability(candidate=candidate, marginal=marginal,
                                                                    ranges=ranges, x=i, y=remaining, z=i)
         return pivot
+
     #prospective and utility methods
-    def get_utility(self, party): #so is utility always a negative number?
-        return -1 * ((self.ideology - party.ideology)**2) #check bodmas etc
+
+    def get_utility(self, party):
+        return -1 * ((self.ideology - party.ideology)**2)
 
     def get_prospective_rating(self, party, pivot_probabilities, parties):
         rating = 0
         for p in parties:
             if p.id != party.id:
-                #explain this with some requirements of ordering ygm
                 if p.id < party.id:
                     key = str(p.id) + str(party.id)
                 else:
                     key = str(party.id) + str(p.id)
-                rating = rating + (pivot_probabilities[key] * (self.get_utility(party=party) - self.get_utility(party=p))) #put party out of loop to reduce func calls
+                rating = rating + (pivot_probabilities[key] * (self.get_utility(party=party) - self.get_utility(party=p)))
         return rating
 
     #Interface methods
+
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id
 
     def choose_vote(self, parties, neighbours):
         pivot_probabilities = self.get_pivot_probabilities(neighbours=neighbours)
+        #distribution = self.get_direct_dist(neighbours=neighbours)
         #pivot_probabilities = self.barycentric_system.get_pivot_probabilities(point=distribution)
         choice = None
         choice_rating = None
@@ -239,7 +251,4 @@ class Agent:
                 utility = current_utility
                 choice = party
         self.previous_vote_id = choice.id
-        self.pure_vote_id = choice.id
-        #if self.id == 83:
-            #print("Agent 83s vote: " + str(self.previous_vote_id))
         return choice

@@ -1,26 +1,17 @@
 import numpy as np
-class BarycentricSystem: #camel case for file name?
+class BarycentricSystem:
 
     def __init__(self):
         self.dimension = 3
 
-    def get_draw_point(self, point, control_index): #REMOVE LOOOP!
+    def get_draw_point(self, point, control_index):
         new_point = []
-        for i in range(0, self.dimension): #maybe dont make this loop and have it have samme interface to the checks?
+        for i in range(0, self.dimension):
             if i == control_index:
                 new_point.append(point[control_index])
             else:
                 new_point.append((1 - point[control_index]) / 2)
         return new_point
-
-    #def get_sp(self, point, index_one, index_two):
-        #eucliedan = (((point[index_one] / 2) ** 2) + ((point[index_two] / 2) ** 2) - (point[index_one] * point[index_two])) ** 0.5
-        #print(eucliedan)
-        #return 1 - eucliedan
-
-    #def get_mp(self, point):
-        #eucliedan = (2 / 3 * ((point[0] ** 2) + (point[1] ** 2) + (point[2] ** 2) - (point[0] * point[1]) - (point[0] * point[2]) - (point[1] * point[2]))) ** 0.5
-        #return 1 - eucliedan
 
     def get_mp(self, point):
         return np.linalg.norm(point - np.asarray([0.33, 0.33, 0.33]))
@@ -44,14 +35,12 @@ class BarycentricSystem: #camel case for file name?
             return False
 
     def get_pivot_probabilities(self, point):
-        #Should do comibinations formulae here if want to extend to 4
-        #return dict for extensibilities sake
-        pivot = { #not extensible
+        pivot = {
             "01": 0,
             "02": 0,
             "12": 0
         }
-        if point[0] == point[1] == point[2]: #if all equal then just return constant so utility is used. This ISNT MODULAR THO AS UTILITY OUTSIDE OF PROB SCOPE
+        if point[0] == point[1] == point[2]: #if all equal then just return constant so utility is used.
             pivot["01"] = 1
             pivot["02"] = 1
             pivot["12"] = 1

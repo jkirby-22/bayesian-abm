@@ -8,30 +8,30 @@ class Environment:
         self.x = None
         self.y = None
 
-    def build_network(self, agent): #Could make more modular?
+    def build_network(self, agent): #Build the spatial model
         id = 0
-        for x in range(0, 13):
+        for x in range(0, 13): #number of agents is fixed so harcoded network shape is fine.
             self.network.append([])
             for y in range(0, 13):
-                node = Node(id=id, x=x, y=y, agent_id=agent[id].id)
+                node = Node(id=id, x=x, y=y, agent_id=id) #Associate each agent with a co-ordinate.
                 self.network[x].append(node)
                 self.node.append(node)
                 id += 1
         np.reshape(self.network, (13, 13))
-        self.x = 13 #Not modular at all!
+        self.x = 13
         self.y = 13
 
     def get_node(self, agent_id):
         return self.node[agent_id]
 
-    def get_neighbour_ids(self, agent_id): #not most effecient but more modular, discuss or review
+    def get_neighbour_ids(self, agent_id):
         nodes = self.get_neighbour_nodes(agent_id=agent_id, level=self.parameters['level'])
         agents = []
         for node in nodes:
             agents.append(node.agent_id)
         return agents
 
-    def get_neighbour_nodes(self, agent_id, level): #this function could deffo be cleaner
+    def get_neighbour_nodes(self, agent_id, level):
         node = self.get_node(agent_id=agent_id)
         node_list = [node]
         explored_nodes = []
@@ -67,9 +67,6 @@ class Environment:
         return [self.network[x_plus][node.y], self.network[node.x][y_minus], self.network[x_minus][node.y], self.network[node.x][y_plus],
                 self.network[x_plus][y_plus], self.network[x_plus][y_minus], self.network[x_minus][y_minus], self.network[x_minus][y_plus]]
 
-    def print_network(self):
-        for node in self.node:
-            print('Node: ' + str(node.id) + 'Agent ID: ' + str(node.agent_id) + ' x: ' + str(node.x) + ' y: ' + str(node.y))
 
 
 
