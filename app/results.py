@@ -10,13 +10,13 @@ class Results:
     def get_vote_count(self, agent):
         votes = [0, 0, 0]
         for voter in agent:
-            votes[voter.previous_vote_id] = votes[voter.previous_vote_id] + 1
+            votes[voter.get_vote()] = votes[voter.get_vote()] + 1
         return votes
 
     def get_vote_share(self, agent):
         votes = [0, 0, 0]
         for voter in agent:
-            votes[voter.previous_vote_id] = votes[voter.previous_vote_id] + 1
+            votes[voter.get_vote()] = votes[voter.get_vote()] + 1
         distribution = [round(vote / len(agent), 2) for vote in votes]
         return distribution
 

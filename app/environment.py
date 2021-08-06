@@ -1,12 +1,13 @@
 from node import Node
 import numpy as np
 class Environment:
-    def __init__(self, parameters):
+    def __init__(self, parameters, agent):
         self.network = [] #Network is node list but with correct shape
         self.node = []
         self.parameters = parameters
         self.x = None
         self.y = None
+        self.build_network(agent=agent)
 
     def build_network(self, agent): #Build the spatial model
         id = 0

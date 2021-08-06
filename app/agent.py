@@ -219,6 +219,8 @@ class Agent:
         return rating
 
     #Interface methods
+    def get_vote(self):
+        return self.previous_vote_id
 
     def submit_vote(self):
         self.previous_vote_id = self.new_vote_id
@@ -251,4 +253,5 @@ class Agent:
                 utility = current_utility
                 choice = party
         self.previous_vote_id = choice.id
+        self.pure_vote_id = choice.id
         return choice

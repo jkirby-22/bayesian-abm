@@ -23,8 +23,7 @@ class Sequence:
         self.create_environment(self.agent)
 
     def create_environment(self, agent):
-        self.environment = Environment(parameters=self.parameters)
-        self.environment.build_network(agent=agent)
+        self.environment = Environment(parameters=self.parameters, agent=agent)
 
     def create_parties(self):
         for id in range(0, self.parameters['no_party']):
